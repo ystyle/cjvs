@@ -2,9 +2,9 @@
 仓颉版本管理工具
 
 ### 编译安装说明
-- 编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)， 以下路径需要使用绝对路径
+- 编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
   ```shell
-  export LD_LIBRARY_PATH=/home/ystyle/Cangjie_0.33.3/cangjie/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
+  export LD_LIBRARY_PATH=/cangjie_0.33.3/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
   ```
 
 ### 使用
