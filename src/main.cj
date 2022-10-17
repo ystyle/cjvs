@@ -86,7 +86,11 @@ func listVersion(args: Array<String>) {
         if (let Some(p) = used) {
             if (p == dir) {
                 print("* ")
+            } else {
+                print("  ")
             }
+        } else {
+            print("  ")
         }
         println("${dir.path.fileName??""}")
     }
