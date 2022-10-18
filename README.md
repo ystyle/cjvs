@@ -22,7 +22,7 @@ GLOBAL OPTIONS:
 
 示例
 - 注意： 如果要切换标准版本和虚拟机版本，需要把两个版本的环境变量都整合在一起或者直接用`source $CANGJIE_HOME/envsetup.sh`
-  - 目前不支持从虚拟机版本切回来
+  - 要从虚拟机版本切回来注意安装说明的额外 `LD_LIBRARY_PATH` 的配置
   - 直接使用`envsetup.sh`： 把以下配置文件放入`.zshrc`或`.bashrc`
     ```shell
     # 仓颉
