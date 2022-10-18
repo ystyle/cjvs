@@ -22,7 +22,7 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.1")
+    println("cjvs version 0.0.2")
 }
 
 func check(): Bool {
@@ -41,9 +41,8 @@ func check(): Bool {
         return false
     }
     let cangjieHome = cangjieHomeOpt.getOrThrow()
-    let cangjieHomeDir = Directory(cangjieHome)
-    if (Directory.exists(cangjieHome) && !cangjieHomeDir.info.isSymbolicLink()) {
-        println("CANGJIE_HOME: ${cangjieHomeDir.info.path.toString()} should be a symbolic link")
+    if (Directory.exists(cangjieHome) && !Directory(cangjieHome).info.isSymbolicLink()) {
+        println("CANGJIE_HOME: ${cangjieHome} should be a symbolic link")
         return false
     }
     CangjieHOME = cangjieHome
@@ -64,6 +63,9 @@ main(): Unit {
     if (!check()) {
         return
     }
+    if (args.containsAny(["--debug"])) {
+        println("CangjieHOME: ${CangjieHOME}")
+    }
     match (command) {
         case "list" | "ls" => listVersion(args)
         case "switch" | "s" => switchVersion(args)
@@ -77,8 +79,8 @@ func listVersion(args: Array<String>) {
     let configdir = homedir.info.path.join(StorePath)
     let dirs = Directory(configdir).directoryList()
     var used: ?FileInfo = None
-    if (let Some(p) = getEnv("CANGJIE_HOME")) {
-        used = Directory(p).info
+    if (Directory.exists(CangjieHOME)) {
+        used = FileInfo(CangjieHOME)
     }
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
@@ -97,7 +99,7 @@ func listVersion(args: Array<String>) {
 }
 
 func switchVersion(args: Array<String>) {
-    if (args.size != 3) {
+    if (args.size <= 2) {
         println("cjvs switch :dir")
         return
     }
@@ -108,14 +110,14 @@ func switchVersion(args: Array<String>) {
         println("${version} is not found.")
         return
     }
-    if (Directory.exists(CangjieHOME)) {
+    if (Path(CangjieHOME).isSymbolicLink()) {
         let rd = remove(CangjieHOME)
         if (rd != 0) {
             println("delete CANGJIE_HOME: ${CangjieHOME} failed, please check permissions")
             return
         }
     }
-
+    
     let sld = symlink(versiondir.toString(), CangjieHOME)
     if (sld != 0) {
         println("create symbolic link failed: ${CangjieHOME}, please check permissions")
