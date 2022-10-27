@@ -40,7 +40,7 @@ GLOBAL OPTIONS:
 - 安装版本: 
   - 检查`CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
   - 试运行`cjvs list`不报错后，会自动创建`$HOME/.config/cjvs`缓存目录
-  - 自行把仓颉编译器版本复制到`$HOME/.config/cjvs`目录
+  - 自行把仓颉编译器版本复制到`$HOME/.config/cjvs/store`目录
     - 如 `$HOME/.config/cjvs/store/std_0.33.3`， 该目录直接包含`bin、lib、runtime、tools、modules`等目录 
     ```shell
     ~/.config/cjvs$ tree -L 3
