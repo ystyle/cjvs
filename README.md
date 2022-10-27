@@ -37,15 +37,6 @@ GLOBAL OPTIONS:
 ```
 
 示例
-- `cjvs list`: 显示本地已经安装的仓颉版本
-    ```shell
-    $ cjvs ls
-    Installed Cangjie versions(makr up * is in used):
-    	  std_0.31.4
-    	  jet_0.33.3
-    	  std_0.32.5
-    	* std_0.33.3
-    ``` 
 - 安装版本: 
   - 检查`CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
   - 试运行`cjvs list`不报错后，会自动创建`$HOME/.config/cjvs`缓存目录
@@ -69,7 +60,16 @@ GLOBAL OPTIONS:
     10 directories, 1 file
     ```
   - 在线下载将在仓颉发布后提供
-- `cjvs switch std_0.33.3` 切换版本
+- 显示本地已经安装的仓颉版本
+    ```shell
+    $ cjvs ls
+    Installed Cangjie versions(makr up * is in used):
+    	  std_0.31.4
+    	  jet_0.33.3
+    	  std_0.32.5
+    	* std_0.33.3
+    ``` 
+- 切换版本
     ```shell
     $ cjvs switch std_0.33.3
     Switch success
