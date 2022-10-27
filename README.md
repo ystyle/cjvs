@@ -37,10 +37,19 @@ GLOBAL OPTIONS:
 ```
 
 示例
-
 - `cjvs list`: 显示本地已经安装的仓颉版本
-  - 会自动创建`$HOME/.config/cjvs`缓存目录
-  - 自行复制仓颉版本到`$HOME/.config/cjvs/store`目录下(在线下载将在仓颉发布后提供)
+    ```shell
+    $ cjvs ls
+    Installed Cangjie versions(makr up * is in used):
+    	  std_0.31.4
+    	  jet_0.33.3
+    	  std_0.32.5
+    	* std_0.33.3
+    ``` 
+- 安装版本: 
+  - 检查`CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
+  - 试运行`cjvs list`不报错后，会自动创建`$HOME/.config/cjvs`缓存目录
+  - 自行把仓颉编译器版本复制到`$HOME/.config/cjvs`目录
     - 如 `$HOME/.config/cjvs/store/std_0.33.3`， 该目录直接包含`bin、lib、runtime、tools、modules`等目录 
     ```shell
     ~/.config/cjvs$ tree -L 3
@@ -59,19 +68,17 @@ GLOBAL OPTIONS:
 
     10 directories, 1 file
     ```
-  - 会检查`CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
+  - 在线下载将在仓颉发布后提供
+- `cjvs switch std_0.33.3` 切换版本
     ```shell
-    $ cjvs ls
-    Installed Cangjie versions(makr up * is in used):
-    	  std_0.31.4
-    	  jet_0.33.3
-    	  std_0.32.5
-    	* std_0.33.3
-    ``` 
-- `cjvs switch cangjie_0.33.3` 切换版本
+    $ cjvs switch std_0.33.3
+    Switch success
+    Now using version: std_0.33.3
+    ```
 
 ### 编译说明
-- 自己编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
-  ```shell
-  export LD_LIBRARY_PATH=/cangjie_0.33.3/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
-  ```
+>自己编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
+
+```shell
+export LD_LIBRARY_PATH=/cangjie_0.33.3/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
+```
