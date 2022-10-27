@@ -1,11 +1,12 @@
 ### cjvs
 仓颉版本管理工具
 
-### 编译安装说明
-- 编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
-  ```shell
-  export LD_LIBRARY_PATH=/cangjie_0.33.3/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
-  ```
+### 安装
+- [下载编译好的版本](https://gitee.com/HW-PLLab/cjvs/releases/latest)
+- 解压到一个文件夹，在`～/.zshrc`或`～/.bashrc`添加环境变量，`/cjvs_amd64`要替换为解压目录
+    ```shell
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cjvs_amd64/lib
+    ```
 
 ### 使用
 ```shell
@@ -65,3 +66,9 @@ GLOBAL OPTIONS:
           cangjie_jet_ 0.33.3
   ``` 
 - `cjvs switch cangjie_0.33.3` 切换版本
+
+### 编译安装说明
+- 编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
+  ```shell
+  export LD_LIBRARY_PATH=/cangjie_0.33.3/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
+  ```
