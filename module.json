@@ -1,11 +1,14 @@
 {
-  "cjc_version": "0.33.3",
+  "cjc_version": "0.36.4",
   "organization": "ystyle",
   "name": "cjvs",
-  "description": "nothing here",
+  "description": "仓颉编译器版本切换工具",
   "version": "1.0.0",
   "requires": {},
-  "package_requires": {},
+  "package_requires": {
+    "path_option": [],
+    "package_option": {}
+  },
   "foreign_requires": {},
   "output_type": "executable",
   "command_option": "",

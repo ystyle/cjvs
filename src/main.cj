@@ -22,7 +22,7 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.3")
+    println("cjvs version 0.0.4")
 }
 
 func check(): Bool {
@@ -67,11 +67,16 @@ main(): Unit {
         println("CangjieHOME: ${CangjieHOME}")
     }
     match (command) {
+        case "install" | "i" => install(args)
         case "list" | "ls" => listVersion(args)
         case "switch" | "s" => switchVersion(args)
         case "remove" | "rm" => removeVersion(args)
         case _ => println("unknow command.")
     }
+}
+
+func install(args: Array<String>) {
+    
 }
 
 func listVersion(args: Array<String>) {

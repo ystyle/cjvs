@@ -1,4 +1,5 @@
 .vscode
+.fleet
 bin
 build
 unittest
