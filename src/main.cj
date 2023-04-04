@@ -51,7 +51,7 @@ func check(): Bool {
 
 main(): Unit {
     let args = getArgs()
-    if (args.size == 1 || args.containsAny(["--help", "-h"])) {
+    if (args.size == 0 || args.containsAny(["--help", "-h"])) {
         usage()
         return
     }
