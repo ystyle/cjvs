@@ -22,7 +22,7 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.4")
+    println("cjvs version 0.0.5")
 }
 
 func check(): Bool {
@@ -76,7 +76,7 @@ main(): Unit {
 }
 
 func install(args: Array<String>) {
-    
+    // todo un
 }
 
 func listVersion(args: Array<String>) {
