@@ -59,7 +59,7 @@ main(): Unit {
         version()
         return
     }
-    let command = args[1]
+    let command = args[0]
     if (!check()) {
         return
     }
@@ -104,13 +104,13 @@ func listVersion(args: Array<String>) {
 }
 
 func switchVersion(args: Array<String>) {
-    if (args.size <= 2) {
-        println("cjvs switch :dir")
+    if (args.size != 2) {
+        println("cjvs switch :version")
         return
     }
-    let version = args[2]
+    let version = args[1]
     let homedir = homeDir()
-    let versiondir = homedir.info.path.join(StorePath).join(args[2])
+    let versiondir = homedir.info.path.join(StorePath).join(version)
     if (!Directory.exists(versiondir)) {
         println("${version} is not found.")
         return
@@ -133,9 +133,13 @@ func switchVersion(args: Array<String>) {
 }
 
 func removeVersion(args: Array<String>) {
-     let version = args[2]
+    if (args.size != 2) {
+        println("cjvs remove :version")
+        return
+    }
+    let version = args[1]
     let homedir = homeDir()
-    let versiondir = homedir.info.path.join(StorePath).join(args[2])
+    let versiondir = homedir.info.path.join(StorePath).join(version)
     if (!Directory.exists(versiondir)) {
         println("${version} is not found.")
         return
