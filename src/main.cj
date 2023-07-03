@@ -1,7 +1,6 @@
 from std import os.{getArgs, getEnv, homeDir}
 from std import os.posix.{symlink, remove}
 from std import fs.{Directory, File, Path, FileInfo}
-
 let ConfigPath = ".config/cjvs"
 let StorePath = ".config/cjvs/store"
 var CangjieHOME: String = ""
@@ -22,10 +21,17 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.5")
+    println("cjvs version 0.0.6")
 }
 
 func check(): Bool {
+    // 检查环境变量: CANGJIE_HOME
+    let cangjieHomeOpt = getEnv("CANGJIE_HOME")
+    if (let None = cangjieHomeOpt) {
+        println("Environment variable CANGJIE_HOME is empty.")
+        return false
+    }
+    // 创建存储目录
     let homedir = homeDir()
     let configdir = homedir.info.path.join(ConfigPath)
     if (!Directory.exists(configdir)) {
@@ -35,11 +41,7 @@ func check(): Bool {
     if (!Directory.exists(storedir)) {
         Directory.create(storedir)
     }
-    let cangjieHomeOpt = getEnv("CANGJIE_HOME")
-    if (let None = cangjieHomeOpt) {
-        println("Environment variable CANGJIE_HOME is empty.")
-        return false
-    }
+    // 检查CANGJIE_HOME, 是否存在, 存在时, 非软连接时报错
     let cangjieHome = cangjieHomeOpt.getOrThrow()
     if (Directory.exists(cangjieHome) && !Directory(cangjieHome).info.isSymbolicLink()) {
         println("CANGJIE_HOME: ${cangjieHome} should be a symbolic link")
@@ -50,22 +52,27 @@ func check(): Bool {
 }
 
 main(): Unit {
+    // 检查设置
+    if (!check()) {
+        return
+    }
     let args = getArgs()
+    // 打印使用帮助
     if (args.size == 0 || args.containsAny(["--help", "-h"])) {
         usage()
         return
     }
+    // 打印版本
     if (args.containsAny(["--version", "-v"])) {
         version()
         return
     }
     let command = args[0]
-    if (!check()) {
-        return
-    }
+    // 在调试模式打印仓颉home
     if (args.containsAny(["--debug"])) {
         println("CangjieHOME: ${CangjieHOME}")
     }
+    // 执行命令
     match (command) {
         case "install" | "i" => install(args)
         case "list" | "ls" => listVersion(args)
@@ -77,6 +84,7 @@ main(): Unit {
 
 func install(args: Array<String>) {
     // todo un
+    println("no support yet")
 }
 
 func listVersion(args: Array<String>) {
@@ -87,6 +95,17 @@ func listVersion(args: Array<String>) {
     if (Directory.exists(CangjieHOME)) {
         used = FileInfo(CangjieHOME)
     }
+    dirs.sortBy({ dir1, dir2 =>
+        let name1 = dir1.path.fileName ?? ""
+        let name2 = dir2.path.fileName ?? ""
+        if (name1 < name2) {
+            return Ordering.LT
+        }
+        if (name1 > name2) {
+            return Ordering.GT
+        }
+        return Ordering.EQ
+    })
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
         print("\t")
