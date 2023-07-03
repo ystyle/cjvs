@@ -4,18 +4,18 @@
 ### 安装
 - [下载编译好的版本](https://gitee.com/HW-PLLab/cjvs/releases/latest)
 - 解压到一个文件夹，在`～/.zshrc`或`～/.bashrc`添加环境变量，`/cjvs_amd64`要替换为解压目录
-    ```shell
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cjvs_amd64/lib
-    export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
-    ```
+```shell
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cjvs_amd64/lib
+export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
+```
 ### 注意
 >如果要切换标准版本和虚拟机版本，需要把两个版本的环境变量都整合在一起
-    ```shell
-    # 仓颉
-    export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
-    export PATH=${HOME}/.local/bin:$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH
-    export LD_LIBRARY_PATH=$CANGJIE_HOME/runtime/lib/linux_x86_64_llvm:${CANGJIE_HOME}/lib/linux_x86_64_jet:${CANGJIE_HOME}/debugger/third_party/lldb/lib:$LD_LIBRARY_PATH
-    ```
+```shell
+# 仓颉
+export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
+export PATH=${HOME}/.local/bin:$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH
+export LD_LIBRARY_PATH=$CANGJIE_HOME/runtime/lib/linux_x86_64_llvm:${CANGJIE_HOME}/lib/linux_x86_64_jet:${CANGJIE_HOME}/debugger/third_party/lldb/lib:$LD_LIBRARY_PATH
+```
 
 ### 使用
 ```shell
