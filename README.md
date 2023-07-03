@@ -6,19 +6,13 @@
 - 解压到一个文件夹，在`～/.zshrc`或`～/.bashrc`添加环境变量，`/cjvs_amd64`要替换为解压目录
     ```shell
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cjvs_amd64/lib
+    export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
     ```
 ### 注意
->如果要切换标准版本和虚拟机版本，需要把两个版本的环境变量都整合在一起或者直接用`source $CANGJIE_HOME/envsetup.sh`
-  - 直接使用`envsetup.sh`： 把以下配置文件放入`.zshrc`或`.bashrc`(切换标准版本和虚拟机版本时，需要打开新的终端， 或者自行执行`source ~/.bashrc`)
+>如果要切换标准版本和虚拟机版本，需要把两个版本的环境变量都整合在一起
     ```shell
     # 仓颉
-    export CANGJIE_HOME="$HOME/cangjie"
-    source source $CANGJIE_HOME/envsetup.sh
-    ```
-  - 整合版本：
-    ```shell
-    # 仓颉
-    export CANGJIE_HOME="$HOME/cangjie"
+    export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
     export PATH=${HOME}/.local/bin:$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH
     export LD_LIBRARY_PATH=$CANGJIE_HOME/runtime/lib/linux_x86_64_llvm:${CANGJIE_HOME}/lib/linux_x86_64_jet:${CANGJIE_HOME}/debugger/third_party/lldb/lib:$LD_LIBRARY_PATH
     ```
@@ -37,9 +31,10 @@ GLOBAL OPTIONS:
 ```
 
 示例
-- 安装版本: 
+- 检查设置
   - 检查`CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
-  - 试运行`cjvs list`不报错后，会自动创建`$HOME/.config/cjvs`缓存目录
+  - 检查通过会打印帮助
+- 安装版本: 
   - 自行把仓颉编译器版本复制到`$HOME/.config/cjvs/store`目录
     - 如 `$HOME/.config/cjvs/store/std_0.33.3`， 该目录直接包含`bin、lib、runtime、tools、modules`等目录 
     ```shell
@@ -77,8 +72,8 @@ GLOBAL OPTIONS:
     ```
 
 ### 编译说明
->自己编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.33.3以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
+>自己编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.39.4以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
 
 ```shell
-export LD_LIBRARY_PATH=/cangjie_0.33.3/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/cangjie_0.39.4/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
 ```
