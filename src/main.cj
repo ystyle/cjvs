@@ -21,13 +21,13 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.6")
+    println("cjvs version 0.0.7")
 }
 
 func check(): Bool {
     // 检查环境变量: CANGJIE_HOME
     let cangjieHomeOpt = getEnv("CANGJIE_HOME")
-    if (let None = cangjieHomeOpt) {
+    if (let None <- cangjieHomeOpt) {
         println("Environment variable CANGJIE_HOME is empty.")
         return false
     }
@@ -109,7 +109,7 @@ func listVersion(args: Array<String>) {
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
         print("\t")
-        if (let Some(p) = used) {
+        if (let Some(p) <- used) {
             if (p == dir) {
                 print("* ")
             } else {

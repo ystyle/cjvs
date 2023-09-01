@@ -4,3 +4,5 @@ bin
 build
 unittest
 module-resolve.json
+module-lock.json
+.cjpm-history
