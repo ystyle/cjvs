@@ -1,0 +1,13 @@
+[dependencies]
+
+[package]
+  cjc-version = "0.36.4"
+  compile-option = "--static-std"
+  description = "仓颉编译器版本切换工具"
+  link-option = ""
+  name = "cjvs"
+  output-type = "executable"
+  src-dir = "src"
+  target-dir = ""
+  version = "1.0.0"
+  package-configuration = {}

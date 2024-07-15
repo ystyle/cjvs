@@ -1,6 +1,8 @@
-from std import os.{getArgs, getEnv, homeDir}
-from std import os.posix.{symlink, remove}
-from std import fs.{Directory, File, Path, FileInfo}
+package cjvs
+
+import std.os.{getArgs, getEnv, homeDir}
+import std.os.posix.{symlink, remove}
+import std.fs.{Directory, File, Path, FileInfo}
 let ConfigPath = ".config/cjvs"
 let StorePath = ".config/cjvs/store"
 var CangjieHOME: String = ""
@@ -95,7 +97,7 @@ func listVersion(args: Array<String>) {
     if (Directory.exists(CangjieHOME)) {
         used = FileInfo(CangjieHOME)
     }
-    dirs.sortBy({ dir1, dir2 =>
+    dirs.sortBy(stable: false,comparator: { dir1, dir2 =>
         let name1 = dir1.path.fileName ?? ""
         let name2 = dir2.path.fileName ?? ""
         if (name1 < name2) {
