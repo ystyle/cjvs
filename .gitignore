@@ -8,3 +8,4 @@ module-lock.json
 .cjpm-history
 target
 .cache
+*.cj.macrocall

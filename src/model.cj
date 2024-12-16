@@ -16,7 +16,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
         this._storeDir = "cjvs/store"
         this._cacheDir = "cjvs/cache"
         this.cangjieHome = ""
-        this.index = "http://192.168.3.41:1080/index.json"
+        this.index = "https://dll.ystyle.top/images/cjvs-index.json"
     }
 
     public mut prop storeDir: String {
@@ -88,7 +88,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
     var arch: String = ""
     var version: String = ""
     var url: String = ""
-    var filename:String = ""
+    var ext:String = ""
     init() {
     }
     public static func fromJson(r: JsonReader): Version {
@@ -105,7 +105,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
                             case "arch" => res.arch = r.readValue<String>()
                             case "version" => res.version = r.readValue<String>()
                             case "url" => res.url = r.readValue<String>()
-                            case "filename" => res.filename = r.readValue<String>()
+                            case "ext" => res.ext = r.readValue<String>()
                             case _ => ()
                         }
                     }
@@ -124,7 +124,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
         w.writeName("arch").writeValue(arch)
         w.writeName("version").writeValue(version)
         w.writeName("url").writeValue(url)
-        w.writeName("filename").writeValue(filename)
+        w.writeName("ext").writeValue(ext)
         w.endObject() // end current object
     }
 }
