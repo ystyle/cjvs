@@ -1,8 +1,10 @@
 [dependencies]
+# zip4cj = {git = "https://gitcode.com/Cangjie-TPC/zip4cj", branch = "develop"}
+# compress4cj = {git = "https://gitcode.com/Cangjie-TPC/compress4cj.git", branch = "update_0.56.4"}
 
 [package]
-  cjc-version = "0.36.4"
-  compile-option = "--static-std"
+  cjc-version = "0.53.4"
+  compile-option = "--static-runtime --static-std --static-libs"
   description = "仓颉编译器版本切换工具"
   link-option = ""
   name = "cjvs"

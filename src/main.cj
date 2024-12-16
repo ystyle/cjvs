@@ -1,64 +1,29 @@
 package cjvs
 
-import std.os.{getArgs, getEnv, homeDir}
-import std.os.posix.{symlink, remove}
-import std.fs.{Directory, File, Path, FileInfo}
-let ConfigPath = ".config/cjvs"
-let StorePath = ".config/cjvs/store"
-var CangjieHOME: String = ""
+import std.process.CurrentProcess
+import std.fs.{Directory, File, Path, FileInfo, removeIfExists, exists, SymbolicLink, OpenMode, rename}
+import std.io.{copy}
+import net.http.{ClientBuilder}
+import net.tls.TlsClientConfig
+import encoding.json.stream.*
+import std.collection.{HashMap, ArrayList}
+// import zip4cj.*
+// import compress.zlib.*
+// import compress4cj.*
+// import compress4cj.compress.*
+// import compress4cj.compress.archivers.*
+// import compress4cj.compress.compressors.*
 
-func usage() {
-    println(
-        """
-Usage: cjvs [options...]
-  list, ls     List Canjie installations.
-  switch, s    Switch to use the specified version.
-  remove, rm   Remove a specific version.
-
-GLOBAL OPTIONS:
-  --help, -h     show help
-  --version, -v  print the version
-"""
-    )
-}
-
-func version() {
-    println("cjvs version 0.0.7")
-}
-
-func check(): Bool {
-    // 检查环境变量: CANGJIE_HOME
-    let cangjieHomeOpt = getEnv("CANGJIE_HOME")
-    if (let None <- cangjieHomeOpt) {
-        println("Environment variable CANGJIE_HOME is empty.")
-        return false
-    }
-    // 创建存储目录
-    let homedir = homeDir()
-    let configdir = homedir.info.path.join(ConfigPath)
-    if (!Directory.exists(configdir)) {
-        Directory.create(configdir)
-    }
-    let storedir = homedir.info.path.join(StorePath)
-    if (!Directory.exists(storedir)) {
-        Directory.create(storedir)
-    }
-    // 检查CANGJIE_HOME, 是否存在, 存在时, 非软连接时报错
-    let cangjieHome = cangjieHomeOpt.getOrThrow()
-    if (Directory.exists(cangjieHome) && !Directory(cangjieHome).info.isSymbolicLink()) {
-        println("CANGJIE_HOME: ${cangjieHome} should be a symbolic link")
-        return false
-    }
-    CangjieHOME = cangjieHome
-    return true
-}
+let AppConfigPath = Path(".config/cjvs")
+let ConfigFilePath = Path(".config/cjvs/config.json")
+var config = Config()
 
 main(): Unit {
     // 检查设置
     if (!check()) {
         return
     }
-    let args = getArgs()
+    let args = CurrentProcess.current.arguments
     // 打印使用帮助
     if (args.size == 0 || args.containsAny(["--help", "-h"])) {
         usage()
@@ -72,42 +37,182 @@ main(): Unit {
     let command = args[0]
     // 在调试模式打印仓颉home
     if (args.containsAny(["--debug"])) {
-        println("CangjieHOME: ${CangjieHOME}")
+        println("CangjieHOME: ${config.cangjieHome}")
     }
     // 执行命令
     match (command) {
+        case "rls" | "ls-remote" => remote(args)
         case "install" | "i" => install(args)
         case "list" | "ls" => listVersion(args)
-        case "switch" | "s" => switchVersion(args)
+        case "switch" | "use" | "s" => switchVersion(args)
         case "remove" | "rm" => removeVersion(args)
         case _ => println("unknow command.")
     }
 }
 
+func usage() {
+    println(
+        """
+Usage: cjvs [options...]
+  list, ls        List Cangjie installations.
+  switch, use     Switch to use the specified version.
+  ls-remote, rls  List all remote Cangjie versions.
+  install, i      Install a new Cangjie version.
+  remove, rm      Remove a specific version.
+
+GLOBAL OPTIONS:
+  --help, -h     show help
+  --version, -v  print the version
+"""
+    )
+}
+
+func version() {
+    println("cjvs version 0.0.8")
+}
+
+func check(): Bool {
+    let homedir = CurrentProcess.current.homeDirectory
+    // 检查环境变量: CANGJIE_HOME
+    let cangjieHomeOpt = CurrentProcess.current.getEnv("CANGJIE_HOME")
+
+    // 读取或创建配置文件
+    config = if (exists(homedir.join(ConfigFilePath))) {
+        let ff: File = File(homedir.join(ConfigFilePath), OpenMode.Read)
+        let conf = Config.fromJson(JsonReader(ff))
+        conf.cangjieHome = cangjieHomeOpt.getOrThrow()
+        conf
+    } else {
+        // 创建默认配置
+        let conf = Config()
+        conf.cangjieHome = cangjieHomeOpt ?? homedir.join(".cangjie").toString()
+        // 创建应用目录
+        let configdir = homedir.join(AppConfigPath)
+        if (!exists(configdir)) {
+            Directory.create(configdir)
+        }
+        // 保存初始配置
+        let ff: File = File(homedir.join(ConfigFilePath), OpenMode.Write)
+        conf.toJson(JsonWriter(ff))
+        // 创建存储目录
+        let storedir = homedir.join(config.storeDir)
+        if (!exists(config.storeDir)) {
+            Directory.create(storedir)
+        }
+        conf
+    }
+
+    // 检查CANGJIE_HOME, 是否存在, 存在时, 非软连接时报错
+    if (exists(config.cangjieHome) && !FileInfo(config.cangjieHome).isSymbolicLink()) {
+        println("CANGJIE_HOME: ${config.cangjieHome} should be a symbolic link")
+        return false
+    }
+    return true
+}
+
+func remote(args: Array<String>) {
+    let groups = getVersions()
+    for ((channel, versions) in groups) {
+        println("Channel: ${channel}")
+        for (version in versions) {
+            println("\t${version.version}")
+        }
+    }
+}
+
+func getVersions(): HashMap<String, ArrayList<Version>> {
+    let client = ClientBuilder().tlsConfig(TlsClientConfig()).build()
+    let res = client.get(config.index)
+    let versions = Array<Version>.fromJson(JsonReader(res.body))
+    let groups = HashMap<String, ArrayList<Version>>()
+    for (version in versions) {
+        if (version.os == CurrentOS && version.arch == arch) {
+            if (groups.contains(version.channel)) {
+                groups[version.channel].append(version)
+            } else {
+                groups[version.channel] = ArrayList<Version>(version)
+            }
+        }
+    }
+    return groups
+}
+
 func install(args: Array<String>) {
-    // todo un
-    println("no support yet")
+    if (args.size < 2) {
+        println("cjvs install :version")
+        return
+    }
+    let version = args[1]
+    let groups = getVersions()
+    var versions = groups[config.channel]
+    if (args.size >= 3 && ["beta", "lts"].contains(args[2]) && groups.contains(args[2])) {
+        versions = groups[args[2]]
+    }
+    for (item in versions) {
+        if (item.version == version) {
+            doinstall(item)
+            return
+        }
+    }
+    println("${version} is not found")
+}
+
+func doinstall(version: Version): Unit {
+    println("功能开发中，还无法正常使用")
+    println("installing ${version.version}...")
+    try {
+        // 创建请求
+        let client = ClientBuilder().readTimeout(Duration.hour).tlsConfig(TlsClientConfig()).build()
+        let res = client.get(version.url)
+        // 创建缓存文件夹
+        if (!exists(config.cacheDir)) {
+            Directory.create(config.cacheDir, recursive: true)
+        }
+        // download
+        let downloadedFile = File.createTemp(config.cacheDir)
+        // let downloadedFile = "/home/ystyle/Downloads/Cangjie/Cangjie_0.57.3/cangjie.zip"
+        copy(res.body, to: downloadedFile)
+        // 解压
+        // let zipFile = ZipFile("demo.zip") // 创建ZipFile类
+        // zipFile.setRunInThread(false) // 设置是否用子线程运行任务
+        // zipFile.extractAll(config.cacheDir) // 解压到 output 文件夹, 文件夹不存在则创建
+        // zipFile.close()
+        // // 移动到安装目录
+        // let tempCangjieHome = Path(config.cacheDir).join("cangjie")
+        // rename(tempCangjieHome, to: Path(config.storeDir).join(version.version))
+    } finally {
+        // 删除缓存文件
+        removeIfExists(config.cacheDir)
+    }
 }
 
 func listVersion(args: Array<String>) {
-    let homedir = homeDir()
-    let configdir = homedir.info.path.join(StorePath)
-    let dirs = Directory(configdir).directoryList()
-    var used: ?FileInfo = None
-    if (Directory.exists(CangjieHOME)) {
-        used = FileInfo(CangjieHOME)
+    let homedir = CurrentProcess.current.homeDirectory
+    let configdir = Path(config.storeDir)
+    let dirs = listdir(configdir)
+    var used: ?Path = None
+    if (exists(config.cangjieHome)) {
+        let h = Path(config.cangjieHome)
+        used = h
+        if (FileInfo(h).isSymbolicLink()) {
+            used = SymbolicLink.readFrom(h)
+        }
     }
-    dirs.sortBy(stable: false,comparator: { dir1, dir2 =>
-        let name1 = dir1.path.fileName ?? ""
-        let name2 = dir2.path.fileName ?? ""
-        if (name1 < name2) {
-            return Ordering.LT
+    dirs.sortBy(
+        stable: false,
+        comparator: {
+            dir1, dir2 =>
+            let name1 = dir1.fileName
+            let name2 = dir2.fileName
+            if (name1 < name2) {
+                return Ordering.LT
+            }
+            if (name1 > name2) {
+                return Ordering.GT
+            }
+            return Ordering.EQ
         }
-        if (name1 > name2) {
-            return Ordering.GT
-        }
-        return Ordering.EQ
-    })
+    )
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
         print("\t")
@@ -120,7 +225,7 @@ func listVersion(args: Array<String>) {
         } else {
             print("  ")
         }
-        println("${dir.path.fileName??""}")
+        println(dir.fileName)
     }
 }
 
@@ -130,27 +235,31 @@ func switchVersion(args: Array<String>) {
         return
     }
     let version = args[1]
-    let homedir = homeDir()
-    let versiondir = homedir.info.path.join(StorePath).join(version)
-    if (!Directory.exists(versiondir)) {
+    let versiondir = Path(config.storeDir).join(version)
+    if (!exists(versiondir)) {
         println("${version} is not found.")
         return
     }
-    if (Path(CangjieHOME).isSymbolicLink()) {
-        let rd = remove(CangjieHOME)
-        if (rd != 0) {
-            println("delete CANGJIE_HOME: ${CangjieHOME} failed, please check permissions")
+    if (FileInfo(config.cangjieHome).isSymbolicLink()) {
+        try {
+            removeIfExists(config.cangjieHome, recursive: true)
+        } catch (e: Exception) {
+            println(
+                "Switch failed: remove CANGJIE_HOME symbolic link failed: ${config.cangjieHome} failed, please check permissions"
+            )
             return
         }
+        try {
+            SymbolicLink.create(Path(config.cangjieHome), to: versiondir)
+        } catch (e: Exception) {
+            println("Switch failed: create symbolic link failed: ${config.cangjieHome}, please check permissions")
+            return
+        }
+        println("Switch success")
+        println("Now using version: ${version}")
+    } else {
+        println("Switch failed: ${config.cangjieHome} is not symbolic link, you should delete it manually")
     }
-    
-    let sld = symlink(versiondir.toString(), CangjieHOME)
-    if (sld != 0) {
-        println("create symbolic link failed: ${CangjieHOME}, please check permissions")
-        return
-    }
-    println("Switch success")
-    println("Now using version: ${version}")
 }
 
 func removeVersion(args: Array<String>) {
@@ -159,15 +268,15 @@ func removeVersion(args: Array<String>) {
         return
     }
     let version = args[1]
-    let homedir = homeDir()
-    let versiondir = homedir.info.path.join(StorePath).join(version)
-    if (!Directory.exists(versiondir)) {
+    let homedir = CurrentProcess.current.homeDirectory
+    let versiondir = Path(config.storeDir).join(version)
+    if (!exists(versiondir)) {
         println("${version} is not found.")
         return
     }
     try {
-        Directory.delete(versiondir, recursive: true)
-    } catch (_) {
+        _ = removeIfExists(versiondir, recursive: true)
+    } catch (e: Exception) {
         println("not yet supported")
     }
 }

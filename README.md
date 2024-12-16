@@ -1,29 +1,19 @@
 ### cjvs
-仓颉版本管理工具
+仓颉版本管理工具(远程安装开发中...)
 
 ### 安装
-- [下载编译好的版本](https://gitee.com/HW-PLLab/cjvs/releases/latest)
-- 解压到一个文件夹，在`～/.zshrc`或`～/.bashrc`添加环境变量，`/cjvs_amd64`要替换为解压目录
-```shell
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/cjvs_amd64/lib
-export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
-```
-### 注意
->如果要切换标准版本和虚拟机版本，需要把两个版本的环境变量都整合在一起
-```shell
-# 仓颉
-export CANGJIE_HOME="$HOME/cangjie" #指向的目录必需不存在或者是个软连接
-export PATH=${HOME}/.local/bin:$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH
-export LD_LIBRARY_PATH=$CANGJIE_HOME/runtime/lib/linux_x86_64_llvm:${CANGJIE_HOME}/lib/linux_x86_64_jet:${CANGJIE_HOME}/debugger/third_party/lldb/lib:$LD_LIBRARY_PATH
-```
+- 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
+- 使用0.57.3版本的仓颉编译: `cjpm build`
 
 ### 使用
 ```shell
 $ cjvs
 Usage: cjvs [options...]
-  list, ls     List Canjie installations.
-  switch, s    Switch to use the specified version.
-  remove, rm   Remove a specific version.
+  list, ls        List Cangjie installations.
+  switch, use     Switch to use the specified version.
+  ls-remote, rls  List all remote Cangjie versions.
+  install, i      Install a new Cangjie version.
+  remove, rm      Remove a specific version.
 
 GLOBAL OPTIONS:
   --help, -h     show help
@@ -54,7 +44,7 @@ GLOBAL OPTIONS:
 
     10 directories, 1 file
     ```
-  - 在线下载将在仓颉发布后提供
+  - 在线下载将在仓颉发布后提供（正在开发中...）
 - 显示本地已经安装的仓颉版本
     ```shell
     $ cjvs ls
@@ -70,10 +60,3 @@ GLOBAL OPTIONS:
     Switch success
     Now using version: std_0.33.3
     ```
-
-### 编译说明
->自己编译后安装需要在`.zshrc`或`.bashrc`最后一行添加以下内容(编译版本需要0.39.4以上)，防止切换版本后因环境问题执行cjvs报错， 以下路径需要使用绝对路径
-
-```shell
-export LD_LIBRARY_PATH=/cangjie_0.39.4/runtime/lib/linux_x86_64_llvm:$LD_LIBRARY_PATH
-```
