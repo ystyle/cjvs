@@ -7,6 +7,7 @@ import net.http.{ClientBuilder}
 import net.tls.TlsClientConfig
 import encoding.json.stream.*
 import std.collection.{HashMap, ArrayList}
+import std.process.Process
 // import zip4cj.*
 // import compress.zlib.*
 // import compress4cj.*
@@ -68,7 +69,7 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.8")
+    println("cjvs version 0.0.9")
 }
 
 func check(): Bool {
@@ -104,15 +105,24 @@ func check(): Bool {
 
     // 检查CANGJIE_HOME, 是否存在, 存在时, 非软连接时报错
     if (exists(config.cangjieHome) && !FileInfo(config.cangjieHome).isSymbolicLink()) {
-        println("CANGJIE_HOME: ${config.cangjieHome} should be a symbolic link")
+        println("CANGJIE_HOME: ${config.cangjieHome} is not a symbolic link, you should remove it.")
         return false
     }
     return true
 }
 
+// 在控制台列出所有的可用版本
 func remote(args: Array<String>) {
+    var showChannel = if (args.size >= 2 && ["beta", "lts"].contains(args[1])) {
+        args[1]
+    } else {
+        "all"
+    }
     let groups = getVersions()
     for ((channel, versions) in groups) {
+        if (showChannel != "all" && channel != showChannel) {
+            continue
+        }
         println("Channel: ${channel}")
         for (version in versions) {
             println("\t${version.version}")
@@ -120,8 +130,9 @@ func remote(args: Array<String>) {
     }
 }
 
+// 获取当前系统可所有的可用版本列表
 func getVersions(): HashMap<String, ArrayList<Version>> {
-    let client = ClientBuilder().tlsConfig(TlsClientConfig()).build()
+    let client = ClientBuilder().readTimeout(Duration.minute).tlsConfig(TlsClientConfig()).build()
     let res = client.get(config.index)
     let versions = Array<Version>.fromJson(JsonReader(res.body))
     let groups = HashMap<String, ArrayList<Version>>()
@@ -137,12 +148,17 @@ func getVersions(): HashMap<String, ArrayList<Version>> {
     return groups
 }
 
+// 安装版本
 func install(args: Array<String>) {
     if (args.size < 2) {
         println("cjvs install :version")
         return
     }
     let version = args[1]
+    if (exists(Path(config.storeDir).join(version))) {
+        println("already installed ${version}")
+        return
+    }
     let groups = getVersions()
     var versions = groups[config.channel]
     if (args.size >= 3 && ["beta", "lts"].contains(args[2]) && groups.contains(args[2])) {
@@ -157,8 +173,8 @@ func install(args: Array<String>) {
     println("${version} is not found")
 }
 
+// 下载并安装仓颉
 func doinstall(version: Version): Unit {
-    println("功能开发中，还无法正常使用")
     println("installing ${version.version}...")
     try {
         // 创建请求
@@ -170,22 +186,46 @@ func doinstall(version: Version): Unit {
         }
         // download
         let downloadedFile = File.createTemp(config.cacheDir)
-        // let downloadedFile = "/home/ystyle/Downloads/Cangjie/Cangjie_0.57.3/cangjie.zip"
         copy(res.body, to: downloadedFile)
         // 解压
-        // let zipFile = ZipFile("demo.zip") // 创建ZipFile类
-        // zipFile.setRunInThread(false) // 设置是否用子线程运行任务
-        // zipFile.extractAll(config.cacheDir) // 解压到 output 文件夹, 文件夹不存在则创建
-        // zipFile.close()
-        // // 移动到安装目录
-        // let tempCangjieHome = Path(config.cacheDir).join("cangjie")
-        // rename(tempCangjieHome, to: Path(config.storeDir).join(version.version))
+        let extractDir = Directory.createTemp(config.cacheDir)
+        match (version.ext) {
+            case "zip" =>
+                // let zipFile = ZipFile("demo.zip") // 创建ZipFile类
+                // zipFile.setRunInThread(false) // 设置是否用子线程运行任务
+                // zipFile.extractAll(config.cacheDir) // 解压到 output 文件夹, 文件夹不存在则创建
+                // zipFile.close()
+                let (status, out, outerr) = Process.runOutput("unzip", [downloadedFile.info.path.toString(), "-d", extractDir.toString()])
+                if (status != 0) {
+                    println("Install failed: ")
+                    println(String.fromUtf8(out))
+                    println(String.fromUtf8(outerr))
+                    return
+                }
+             ()
+            case "tar.gz" => 
+                let (status, out, outerr) = Process.runOutput("tar", ["-zxf", downloadedFile.info.path.toString(), "-C", extractDir.toString()])
+                if (status != 0) {
+                    println("Install failed: ")
+                    println(String.fromUtf8(out))
+                    println(String.fromUtf8(outerr))
+                    return
+                }
+            ()
+            case _ => println("unsupport file format")
+        }
+        // 移动到安装目录
+        let tempCangjieHome = extractDir.join("cangjie")
+        let versionDir = Path(config.storeDir).join(version.version)
+        rename(tempCangjieHome, to: versionDir)
     } finally {
         // 删除缓存文件
-        removeIfExists(config.cacheDir)
+        removeIfExists(config.cacheDir, recursive: true)
     }
 }
 
+
+// 列出本地已安装的版本
 func listVersion(args: Array<String>) {
     let homedir = CurrentProcess.current.homeDirectory
     let configdir = Path(config.storeDir)
@@ -194,6 +234,7 @@ func listVersion(args: Array<String>) {
     if (exists(config.cangjieHome)) {
         let h = Path(config.cangjieHome)
         used = h
+        // 读取到软连接: 正常应该都是软链接才对
         if (FileInfo(h).isSymbolicLink()) {
             used = SymbolicLink.readFrom(h)
         }
@@ -229,6 +270,7 @@ func listVersion(args: Array<String>) {
     }
 }
 
+// 切换版本
 func switchVersion(args: Array<String>) {
     if (args.size != 2) {
         println("cjvs switch :version")
@@ -258,10 +300,11 @@ func switchVersion(args: Array<String>) {
         println("Switch success")
         println("Now using version: ${version}")
     } else {
-        println("Switch failed: ${config.cangjieHome} is not symbolic link, you should delete it manually")
+        println("Switch failed: ${config.cangjieHome} is not a symbolic link, you should remove it manually")
     }
 }
 
+// 删除已安装版本
 func removeVersion(args: Array<String>) {
     if (args.size != 2) {
         println("cjvs remove :version")
