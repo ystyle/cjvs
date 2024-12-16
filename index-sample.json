@@ -1,0 +1,18 @@
+[
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-linux_x64.tar.gz&objectKey=6719f1eb3af6947e3c6af327",
+        "channel": "beta",
+        "version": "0.53.13",
+        "os": "linux",
+        "arch": "x86_64",
+        "filename": "Cangjie-0.53.13-linux_x64.tar.gz"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-linux_aarch64.tar.gz&objectKey=6719f1ec3af6947e3c6af328",
+        "channel": "beta",
+        "version": "0.53.13",
+        "os": "linux",
+        "arch": "aarch64",
+        "filename": "Cangjie-0.53.13-linux_aarch64.tar.gz"
+    }
+]
