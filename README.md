@@ -1,5 +1,5 @@
 ### cjvs
-仓颉版本管理工具，类似nvm, 目前只支持linux平台, 解压依赖tar和unzip
+仓颉版本管理工具，类似nvm，目前只支持linux平台, 解压依赖tar和unzip
 
 ### 安装
 - 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
