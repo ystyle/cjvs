@@ -89,6 +89,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
     var version: String = ""
     var url: String = ""
     var ext:String = ""
+    var sha256sum:String = ""
     init() {
     }
     public static func fromJson(r: JsonReader): Version {
@@ -106,6 +107,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
                             case "version" => res.version = r.readValue<String>()
                             case "url" => res.url = r.readValue<String>()
                             case "ext" => res.ext = r.readValue<String>()
+                            case "sha256sum" => res.sha256sum = r.readValue<String>()
                             case _ => ()
                         }
                     }
@@ -125,6 +127,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
         w.writeName("version").writeValue(version)
         w.writeName("url").writeValue(url)
         w.writeName("ext").writeValue(ext)
+        w.writeName("sha256sum").writeValue(sha256sum)
         w.endObject() // end current object
     }
 }
