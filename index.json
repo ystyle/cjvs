@@ -5,7 +5,8 @@
         "ext": "tar.gz",
         "version": "0.53.13",
         "os": "linux",
-        "arch": "x86_64"
+        "arch": "x86_64",
+        "sha256sum": "B3C0087DB26005F6316767FD7CCBFC40F721CFD2D092F94BF39A621C7D91FBBB"
     },
     {
         "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-linux_aarch64.tar.gz&objectKey=6719f1ec3af6947e3c6af328",
@@ -13,6 +14,34 @@
         "ext": "tar.gz",
         "version": "0.53.13",
         "os": "linux",
-        "arch": "aarch64"
+        "arch": "aarch64",
+        "sha256sum": "9B4027B6FB4DFFC34D98B26AAE30F51329A32EE423B7ADC1D35349AAEC74FF9A"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-windows_x64.zip&objectKey=6719f1e13af6947e3c6af326",
+        "channel": "beta",
+        "ext": "zip",
+        "version": "0.53.13",
+        "os": "windows",
+        "arch": "x86_64",
+        "sha256sum": "C25D2B50E0F5AAE54CBDAFE3BE24A84C9B1E27A243B573FDC585963E4DEDDC56"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-darwin_x64.tar.gz&objectKey=6719f1c13af6947e3c6af325",
+        "channel": "beta",
+        "ext": "tar.gz",
+        "version": "0.53.13",
+        "os": "darwin",
+        "arch": "x86_64",
+        "sha256sum": "93D0CBFBE318F6A714A37BBCC3707E0070E830F35B85C228E92D358F68CA28C6"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-darwin_aarch64.tar.gz&objectKey=6719f1b33af6947e3c6af322",
+        "channel": "beta",
+        "ext": "tar.gz",
+        "version": "0.53.13",
+        "os": "darwin",
+        "arch": "aarch64",
+        "sha256sum": "93D0CBFBE318F6A714A37BBCC3707E0070E830F35B85C228E92D358F68CA28C6"
     }
 ]
