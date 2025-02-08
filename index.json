@@ -43,5 +43,50 @@
         "os": "darwin",
         "arch": "aarch64",
         "sha256sum": "93D0CBFBE318F6A714A37BBCC3707E0070E830F35B85C228E92D358F68CA28C6"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-linux_x64.tar.gz&objectKey=67a2c8976a75297d1cdc1d4c",
+        "channel": "beta",
+        "ext": "tar.gz",
+        "version": "0.53.18",
+        "os": "linux",
+        "arch": "x86_64",
+        "sha256sum": "8A9EF6B3BA5C58696A1E23FAB8FF5DCA3E6BC8BACF2A0A894BBA4296C54C8DB1"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-linux_aarch64.tar.gz&objectKey=67a2c8606a75297d1cdc1d48",
+        "channel": "beta",
+        "ext": "tar.gz",
+        "version": "0.53.18",
+        "os": "linux",
+        "arch": "aarch64",
+        "sha256sum": "071ABDB83D9FFA6F070C6ABCC8D08FA1F8AC3F4381BAB64560D0399B3AF17EEE"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-windows_x64.zip&objectKey=67a2c8a26a75297d1cdc1d4e",
+        "channel": "beta",
+        "ext": "zip",
+        "version": "0.53.18",
+        "os": "windows",
+        "arch": "x86_64",
+        "sha256sum": "74080EFA705212C4E494A8C18D40293BED9CE3020EEC357C6A288FA6E6B4D379"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-darwin_x64.tar.gz&objectKey=67a2c8976a75297d1cdc1d4d",
+        "channel": "beta",
+        "ext": "tar.gz",
+        "version": "0.53.18",
+        "os": "darwin",
+        "arch": "x86_64",
+        "sha256sum": "2CE777C02C5C0C264CE6A2A1BBAF46ED981698C43CD967B096D2ECC116C29801"
+    },
+    {
+        "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-darwin_aarch64.tar.gz&objectKey=67a2c88e6a75297d1cdc1d4b",
+        "channel": "beta",
+        "ext": "tar.gz",
+        "version": "0.53.18",
+        "os": "darwin",
+        "arch": "aarch64",
+        "sha256sum": "0044B6810EF78B19EC451EF0514A8D4DE1634AE36E4680746E89B329B381991E"
     }
 ]
