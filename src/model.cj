@@ -4,6 +4,7 @@ import encoding.json.stream.*
 import std.fs.Path
 import std.process.CurrentProcess
 import std.deriving.*
+import std.env.getHomeDirectory
 
 class Config <: JsonSerializable & JsonDeserializable<Config> {
     var channel: String
@@ -24,7 +25,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
             if (_storeDir.startsWith("/")) {
                 _storeDir
             } else {
-                let homedir = CurrentProcess.current.homeDirectory
+                let homedir = getHomeDirectory()
                 homedir.join(".config").join(_storeDir).toString()
             }
         }
@@ -37,7 +38,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
             if (_cacheDir.startsWith("/")) {
                 _cacheDir
             } else {
-                let homedir = CurrentProcess.current.homeDirectory
+                let homedir = getHomeDirectory()
                 homedir.join(".config").join(_cacheDir).toString()
             }
         }
@@ -59,7 +60,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
                             case "cacheDir" => res._cacheDir = r.readValue<String>()
                             case "cangjieHome" => res.cangjieHome = r.readValue<String>()
                             case "index" => res.index = r.readValue<String>()
-                            case _ => ()
+                            case _ => r.skip()
                         }
                     }
                     r.endObject()
