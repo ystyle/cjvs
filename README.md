@@ -6,8 +6,8 @@
 - 使用0.57.3版本的仓颉编译: `cjpm build`
 
 ### 设置
-- 设置一个`CANGJIE_HOME`环境变量， 如在`~/.zshrc`或`~/.bashrc`添加`export CANGJIE_HOME="$HOME/.cangjie"`, 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
-- 在`~/.zshrc`或`~/.bashrc`添加 `source ${CANGJIE_HOME}/envsetup.sh`
+- 设置一个`CJVS_CANGJIE_HOME`环境变量， 如在`~/.zshrc`或`~/.bashrc`添加`export CJVS_CANGJIE_HOME="$HOME/.cangjie"`, 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
+- 在`~/.zshrc`或`~/.bashrc`添加 `source ${CJVS_CANGJIE_HOME}/envsetup.sh`
 
 ### 使用
 ```shell
@@ -29,7 +29,7 @@ GLOBAL OPTIONS:
 
 示例
 - 检查设置
-  - 检查`CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
+  - 检查`CJVS_CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
   - 检查通过会打印帮助
 - 显示可用公测版本
   ```shell
