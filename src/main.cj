@@ -22,14 +22,14 @@ let ConfigFilePath = Path(".config/cjvs/config.json")
 var config = Config()
 
 main(): Unit {
-    // 检查设置
-    if (!check()) {
-        return
-    }
     let args = getCommandLine()[1..]
     // 打印使用帮助
     if (args.size == 0 || args.containsAny(["--help", "-h"])) {
         usage()
+        return
+    }
+    // 检查设置
+    if (!check()) {
         return
     }
     // 打印版本
@@ -86,7 +86,7 @@ func check(): Bool {
     config = if (exists(homedir.join(ConfigFilePath))) {
         let ff: File = File(homedir.join(ConfigFilePath), OpenMode.Read)
         let conf = Config.fromJson(JsonReader(ff))
-        conf.cangjieHome = cangjieHomeOpt.getOrThrow()
+        conf.cangjieHome = cangjieHomeOpt ?? homedir.join(".cangjie").toString()
         conf
     } else {
         // 创建默认配置
@@ -99,20 +99,23 @@ func check(): Bool {
         }
         // 保存初始配置
         let ff: File = File(homedir.join(ConfigFilePath), OpenMode.Write)
-        conf.toJson(JsonWriter(ff))
+        let jr = JsonWriter(ff)
+        conf.toJson(jr)
+        jr.flush()
+        ff.flush()
         // 创建存储目录
-        let storedir = homedir.join(config.storeDir)
         if (!exists(config.storeDir)) {
-            Directory.create(storedir)
+            Directory.create(config.storeDir)
         }
         conf
     }
 
     // 检查CANGJIE_HOME, 是否存在, 存在时, 非软连接时报错
     if (exists(config.cangjieHome) && !FileInfo(config.cangjieHome).isSymbolicLink()) {
-        println("CANGJIE_HOME: ${config.cangjieHome} is not a symbolic link, you should remove it.")
+        println("CJVS_CANGJIE_HOME: ${config.cangjieHome} is not a symbolic link, you should remove it.")
         return false
     }
+    
     return true
 }
 
@@ -303,18 +306,21 @@ func listVersion(args: Array<String>) {
             used = SymbolicLink.readFrom(h)
         }
     }
-    sort<Path>(dirs, by: {
-        dir1, dir2 =>
-        let name1 = dir1.fileName
-        let name2 = dir2.fileName
-        if (name1 < name2) {
-            return Ordering.LT
-        }
-        if (name1 > name2) {
-            return Ordering.GT
-        }
-        return Ordering.EQ
-    })
+    if (dirs.size > 0) {
+        sort<Path>(dirs, by: {
+            dir1, dir2 =>
+            let name1 = dir1.fileName
+            let name2 = dir2.fileName
+            if (name1 < name2) {
+                return Ordering.LT
+            }
+            if (name1 > name2) {
+                return Ordering.GT
+            }
+            return Ordering.EQ
+        })
+    }
+    
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
         print("\t")
