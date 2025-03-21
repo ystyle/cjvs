@@ -74,13 +74,13 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.12")
+    println("cjvs version 0.0.13")
 }
 
 func check(): Bool {
     let homedir = getHomeDirectory()
-    // 检查环境变量: CANGJIE_HOME
-    let cangjieHomeOpt = getVariable("CANGJIE_HOME")
+    // 检查环境变量: CJVS_CANGJIE_HOME
+    let cangjieHomeOpt = getVariable("CJVS_CANGJIE_HOME")
 
     // 读取或创建配置文件
     config = if (exists(homedir.join(ConfigFilePath))) {
