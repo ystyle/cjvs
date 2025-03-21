@@ -1,13 +1,15 @@
 package cjvs
 
 import std.process.CurrentProcess
+import std.env.{getCommandLine, getHomeDirectory, getVariable}
 import std.fs.{Directory, File, Path, FileInfo, removeIfExists, exists, SymbolicLink, OpenMode, rename}
 import std.io.{copy}
+import std.sort.sort
 import net.http.{ClientBuilder}
 import net.tls.TlsClientConfig
 import encoding.json.stream.*
 import std.collection.{HashMap, ArrayList}
-import std.process.Process
+import std.process.{Process, executeWithOutput}
 // import zip4cj.*
 // import compress.zlib.*
 // import compress4cj.*
@@ -24,7 +26,7 @@ main(): Unit {
     if (!check()) {
         return
     }
-    let args = CurrentProcess.current.arguments
+    let args = getCommandLine()[1..]
     // 打印使用帮助
     if (args.size == 0 || args.containsAny(["--help", "-h"])) {
         usage()
@@ -58,7 +60,10 @@ Usage: cjvs [options...]
   list, ls        List Cangjie installations.
   switch, use     Switch to use the specified version.
   ls-remote, rls  List all remote Cangjie versions.
-  install, i      Install a new Cangjie version.
+  install, i      Install a new Cangjie version. 
+                    eg: 
+                      cjvs install 0.53.13 # install online
+                      cjvs install 0.59.6 ~/Downloads/cangjie-0.59.6-linux_x64.tar.gz # install a local version
   remove, rm      Remove a specific version.
 
 GLOBAL OPTIONS:
@@ -69,13 +74,13 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.9")
+    println("cjvs version 0.0.12")
 }
 
 func check(): Bool {
-    let homedir = CurrentProcess.current.homeDirectory
+    let homedir = getHomeDirectory()
     // 检查环境变量: CANGJIE_HOME
-    let cangjieHomeOpt = CurrentProcess.current.getEnv("CANGJIE_HOME")
+    let cangjieHomeOpt = getVariable("CANGJIE_HOME")
 
     // 读取或创建配置文件
     config = if (exists(homedir.join(ConfigFilePath))) {
@@ -123,6 +128,16 @@ func remote(args: Array<String>) {
         if (showChannel != "all" && channel != showChannel) {
             continue
         }
+        sort<Version>(versions, by: {
+            v1, v2 => 
+            if (v1.version < v2.version) {
+                return Ordering.GT
+            }
+            if (v1.version > v2.version) {
+                return Ordering.LT
+            }
+            return Ordering.EQ
+        })
         println("Channel: ${channel}")
         for (version in versions) {
             println("\t${version.version}")
@@ -139,9 +154,9 @@ func getVersions(): HashMap<String, ArrayList<Version>> {
     for (version in versions) {
         if (version.os == CurrentOS && version.arch == arch) {
             if (groups.contains(version.channel)) {
-                groups[version.channel].append(version)
+                groups[version.channel].add(version)
             } else {
-                groups[version.channel] = ArrayList<Version>(version)
+                groups[version.channel] = ArrayList<Version>([version])
             }
         }
     }
@@ -159,6 +174,20 @@ func install(args: Array<String>) {
         println("already installed ${version}")
         return
     }
+    if (args.size == 3) {
+        // 安装本地文件
+        let filepath = args[2]
+        println(version)
+        println(exists(filepath))
+        println(filepath.endsWith(".zip") || filepath.endsWith(".tar.gz"))
+        println(Path(filepath).extensionName)
+        if (exists(filepath) && (filepath.endsWith(".zip") || filepath.endsWith(".tar.gz"))) {
+            doinstallLocal(version, filepath)
+        } else {
+            println("path: ${filepath}, is not a zip or tar.gz file")
+        }
+        return
+    }
     let groups = getVersions()
     var versions = groups[config.channel]
     if (args.size >= 3 && ["beta", "lts"].contains(args[2]) && groups.contains(args[2])) {
@@ -171,6 +200,42 @@ func install(args: Array<String>) {
         }
     }
     println("${version} is not found")
+}
+
+// 安装本地文件
+func doinstallLocal(version: String, filepath:String): Unit {
+    // 创建缓存文件夹
+    if (!exists(config.cacheDir)) {
+        Directory.create(config.cacheDir, recursive: true)
+    }
+        // 解压
+    let extractDir = Directory.createTemp(config.cacheDir)
+    match (Path(filepath).extensionName) {
+        case "zip" =>
+            let (status, out, outerr) = executeWithOutput("unzip", [filepath, "-d", extractDir.toString()])
+            if (status != 0) {
+                println("Install failed: ")
+                println(String.fromUtf8(out))
+                println(String.fromUtf8(outerr))
+                return
+            }
+            ()
+        case "gz" => 
+            let (status, out, outerr) = executeWithOutput("tar", ["-zxf", filepath, "-C", extractDir.toString()])
+            if (status != 0) {
+                println("Install failed: ")
+                println(String.fromUtf8(out))
+                println(String.fromUtf8(outerr))
+                return
+            }
+        ()
+        case _ => println("unsupport file format")
+    }
+    // 移动到安装目录
+    let tempCangjieHome = extractDir.join("cangjie")
+    let versionDir = Path(config.storeDir).join(version)
+    rename(tempCangjieHome, to: versionDir)
+    println("install success.")
 }
 
 // 下载并安装仓颉
@@ -195,7 +260,7 @@ func doinstall(version: Version): Unit {
                 // zipFile.setRunInThread(false) // 设置是否用子线程运行任务
                 // zipFile.extractAll(config.cacheDir) // 解压到 output 文件夹, 文件夹不存在则创建
                 // zipFile.close()
-                let (status, out, outerr) = Process.runOutput("unzip", [downloadedFile.info.path.toString(), "-d", extractDir.toString()])
+                let (status, out, outerr) = executeWithOutput("unzip", [downloadedFile.info.path.toString(), "-d", extractDir.toString()])
                 if (status != 0) {
                     println("Install failed: ")
                     println(String.fromUtf8(out))
@@ -204,7 +269,7 @@ func doinstall(version: Version): Unit {
                 }
              ()
             case "tar.gz" => 
-                let (status, out, outerr) = Process.runOutput("tar", ["-zxf", downloadedFile.info.path.toString(), "-C", extractDir.toString()])
+                let (status, out, outerr) = executeWithOutput("tar", ["-zxf", downloadedFile.info.path.toString(), "-C", extractDir.toString()])
                 if (status != 0) {
                     println("Install failed: ")
                     println(String.fromUtf8(out))
@@ -218,16 +283,15 @@ func doinstall(version: Version): Unit {
         let tempCangjieHome = extractDir.join("cangjie")
         let versionDir = Path(config.storeDir).join(version.version)
         rename(tempCangjieHome, to: versionDir)
+        println("install success.")
     } finally {
         // 删除缓存文件
         removeIfExists(config.cacheDir, recursive: true)
     }
 }
 
-
 // 列出本地已安装的版本
 func listVersion(args: Array<String>) {
-    let homedir = CurrentProcess.current.homeDirectory
     let configdir = Path(config.storeDir)
     let dirs = listdir(configdir)
     var used: ?Path = None
@@ -239,21 +303,18 @@ func listVersion(args: Array<String>) {
             used = SymbolicLink.readFrom(h)
         }
     }
-    dirs.sortBy(
-        stable: false,
-        comparator: {
-            dir1, dir2 =>
-            let name1 = dir1.fileName
-            let name2 = dir2.fileName
-            if (name1 < name2) {
-                return Ordering.LT
-            }
-            if (name1 > name2) {
-                return Ordering.GT
-            }
-            return Ordering.EQ
+    sort<Path>(dirs, by: {
+        dir1, dir2 =>
+        let name1 = dir1.fileName
+        let name2 = dir2.fileName
+        if (name1 < name2) {
+            return Ordering.LT
         }
-    )
+        if (name1 > name2) {
+            return Ordering.GT
+        }
+        return Ordering.EQ
+    })
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
         print("\t")
@@ -311,15 +372,29 @@ func removeVersion(args: Array<String>) {
         return
     }
     let version = args[1]
-    let homedir = CurrentProcess.current.homeDirectory
     let versiondir = Path(config.storeDir).join(version)
     if (!exists(versiondir)) {
         println("${version} is not found.")
         return
     }
+    var used: ?Path = None
+    if (exists(config.cangjieHome)) {
+        let h = Path(config.cangjieHome)
+        used = h
+        // 读取到软连接: 正常应该都是软链接才对
+        if (FileInfo(h).isSymbolicLink()) {
+            used = SymbolicLink.readFrom(h)
+        }
+    }
+    if (let Some(u) <- used) {
+        if (versiondir == u) {
+            println("version: ${version} is inused.")
+            return
+        }
+    }
     try {
         _ = removeIfExists(versiondir, recursive: true)
     } catch (e: Exception) {
-        println("not yet supported")
+        println("remote failed: ${e}")
     }
 }
