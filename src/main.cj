@@ -74,7 +74,7 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.13")
+    println("cjvs version 0.0.14")
 }
 
 func check(): Bool {
