@@ -23,9 +23,9 @@ func listdir(path: Path): ArrayList<Path> {
             if (fileinfo.isDirectory()) {
                 dirs.add(fileinfo.path)
             }
-            if (let Some(v) <- fileinfo.parentDirectory?.path) {
-                return path == v
-            }
+            // if (let Some(v) <- fileinfo.parentDirectory?.path) {
+            //     return path == v
+            // }
             return true
         }
     )
