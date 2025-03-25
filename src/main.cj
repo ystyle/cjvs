@@ -74,7 +74,7 @@ GLOBAL OPTIONS:
 }
 
 func version() {
-    println("cjvs version 0.0.14")
+    println("cjvs version 0.0.15")
 }
 
 func check(): Bool {
@@ -131,16 +131,7 @@ func remote(args: Array<String>) {
         if (showChannel != "all" && channel != showChannel) {
             continue
         }
-        sort<Version>(versions, by: {
-            v1, v2 => 
-            if (v1.version < v2.version) {
-                return Ordering.GT
-            }
-            if (v1.version > v2.version) {
-                return Ordering.LT
-            }
-            return Ordering.EQ
-        })
+        sort(versions, key: {v => v.version })
         println("Channel: ${channel}")
         for (version in versions) {
             println("\t${version.version}")
@@ -296,7 +287,7 @@ func doinstall(version: Version): Unit {
 // 列出本地已安装的版本
 func listVersion(args: Array<String>) {
     let configdir = Path(config.storeDir)
-    let dirs = listdir(configdir)
+    var dirs = listdir(configdir).toArray()
     var used: ?Path = None
     if (exists(config.cangjieHome)) {
         let h = Path(config.cangjieHome)
@@ -306,19 +297,9 @@ func listVersion(args: Array<String>) {
             used = SymbolicLink.readFrom(h)
         }
     }
+    
     if (dirs.size > 0) {
-        sort<Path>(dirs, by: {
-            dir1, dir2 =>
-            let name1 = dir1.fileName
-            let name2 = dir2.fileName
-            if (name1 < name2) {
-                return Ordering.LT
-            }
-            if (name1 > name2) {
-                return Ordering.GT
-            }
-            return Ordering.EQ
-        })
+        sort<Path, String>(dirs, key: {p => p.fileName})
     }
     
     println("Installed Cangjie versions(makr up * is in used):")
