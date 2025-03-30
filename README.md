@@ -12,8 +12,14 @@
 ### 设置
 
 #### Linux
-- 设置一个`CJVS_CANGJIE_HOME`环境变量， 如在`~/.zshrc`或`~/.bashrc`添加`export CJVS_CANGJIE_HOME="$HOME/.cangjie"`, 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
-- 在`~/.zshrc`或`~/.bashrc`添加 `source ${CJVS_CANGJIE_HOME}/envsetup.sh`
+添加以下环境变量， 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
+```shell
+export CJVS_CANGJIE_HOME="$HOME/.cangjie"
+export CANGJIE_HOME="$CJVS_CANGJIE_HOME"
+export PATH=$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH:${HOME}/.cjpm/bin
+export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${hw_arch}_llvm:${CANGJIE_HOME}/tools/lib:${LD_LIBRARY_PATH}
+```
+>因为自带的`envsetup.sh`会读取软件连接的原始目录，所以用自己写的环境变量
 
 #### Windows
 - 需要以管理员身份运行powershell
