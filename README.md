@@ -3,11 +3,20 @@
 
 ### 安装
 - 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
-- 使用0.57.3版本的仓颉编译: `cjpm build`
+- 使用0.59.6版本的仓颉编译: `cjpm build`
 
 ### 设置
+
+#### Linux
 - 设置一个`CJVS_CANGJIE_HOME`环境变量， 如在`~/.zshrc`或`~/.bashrc`添加`export CJVS_CANGJIE_HOME="$HOME/.cangjie"`, 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
 - 在`~/.zshrc`或`~/.bashrc`添加 `source ${CJVS_CANGJIE_HOME}/envsetup.sh`
+
+#### Windows
+- 需要以管理员身份运行powershell
+- 设置一个`CJVS_CANGJIE_HOME`环境变量如`%USERPROFILE%/.cangjie`， 要求目录不存在， 工具会自动创建
+- 然后参照[官方文档](https://docs.cangjie-lang.cn/docs/0.53.18/user_manual/source_zh_cn/first_understanding/install_Community.html#windows) 设置， 其中
+  - 临时生效：powershell环境变量的改为执行： `. $env:CJVS_CANGJIE_HOME\envsetup.ps1`
+  - 始终生效： 在官方步骤里的`CANGJIE_HOME`设置为`%CJVS_CANGJIE_HOME%`， 其它走官方步骤
 
 ### 使用
 ```shell

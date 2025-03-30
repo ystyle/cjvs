@@ -4,8 +4,9 @@ import encoding.json.stream.*
 import std.fs.Path
 import std.process.CurrentProcess
 import std.deriving.*
-import std.env.getHomeDirectory
+import std.env.{getHomeDirectory, getCommand, getVariable}
 
+@Derive[ToString]
 class Config <: JsonSerializable & JsonDeserializable<Config> {
     var channel: String
     var _storeDir: String
@@ -16,13 +17,23 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
         this.channel = "beta"
         this._storeDir = "cjvs/store"
         this._cacheDir = "cjvs/cache"
-        this.cangjieHome = ""
+        if (CurrentOS == "windows") {
+            let binpath = Path(getCommand()).parent
+            this._storeDir = binpath.join("store").toString()
+            this._cacheDir = binpath.join("cache").toString()
+        }
+        // 检查环境变量: CJVS_CANGJIE_HOME
+        let homedir = getHomeDirectory()
+        let cangjieHomeOpt = getVariable("CJVS_CANGJIE_HOME")
+        this.cangjieHome = cangjieHomeOpt ?? homedir.join(".cangjie").toString()
         this.index = "https://dll.ystyle.top/images/cjvs-index.json"
     }
 
     public mut prop storeDir: String {
         get() {
-            if (_storeDir.startsWith("/")) {
+            if (CurrentOS == "windows") {
+                _storeDir
+            } else if (_storeDir.startsWith("/")) {
                 _storeDir
             } else {
                 let homedir = getHomeDirectory()
@@ -35,7 +46,9 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
     }
     public mut prop cacheDir: String {
         get() {
-            if (_cacheDir.startsWith("/")) {
+            if (CurrentOS == "windows") {
+                _cacheDir
+            } else if (_cacheDir.startsWith("/")) {
                 _cacheDir
             } else {
                 let homedir = getHomeDirectory()
@@ -58,7 +71,6 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
                             case "channel" => res.channel = r.readValue<String>()
                             case "storeDir" => res._storeDir = r.readValue<String>()
                             case "cacheDir" => res._cacheDir = r.readValue<String>()
-                            case "cangjieHome" => res.cangjieHome = r.readValue<String>()
                             case "index" => res.index = r.readValue<String>()
                             case _ => r.skip()
                         }
@@ -76,7 +88,6 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
         w.writeName("channel").writeValue(channel) // write name and value pair in current object
         w.writeName("storeDir").writeValue(_storeDir)
         w.writeName("cacheDir").writeValue(_cacheDir)
-        w.writeName("cangjieHome").writeValue(cangjieHome)
         w.writeName("index").writeValue(index)
         w.endObject() // end current object
     }
