@@ -192,7 +192,11 @@ func doinstallLocal(version: String, filepath:String): Unit {
     }
         // 解压
     let extractDir = Directory.createTemp(config.cacheDir)
-    uncompress(Path(filepath).extensionName, filepath, extractDir.toString())
+    var ext = Path(filepath).extensionName
+    if (ext == "gz") {
+        ext = "tar.gz"
+    }
+    uncompress(ext, filepath, extractDir.toString())
     
     // 移动到安装目录
     let tempCangjieHome = extractDir.join("cangjie")
