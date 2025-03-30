@@ -12,7 +12,7 @@
 ### 设置
 
 #### Linux
-添加以下环境变量， 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
+在`~/.bashrc`或`~/.zshrc`添加以下环境变量， 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
 ```shell
 export CJVS_CANGJIE_HOME="$HOME/.cangjie"
 export CANGJIE_HOME="$CJVS_CANGJIE_HOME"
