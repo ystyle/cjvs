@@ -5,8 +5,6 @@ import std.env.{getCommandLine, getHomeDirectory, getVariable}
 import std.fs.{Directory, File, Path, FileInfo, removeIfExists, exists, SymbolicLink, OpenMode, rename}
 import std.io.{copy}
 import std.sort.sort
-import net.http.{ClientBuilder}
-import net.tls.TlsClientConfig
 import encoding.json.stream.*
 import std.collection.{HashMap, ArrayList}
 import std.process.{Process, executeWithOutput}
@@ -79,19 +77,13 @@ func version() {
 
 func check(): Bool {
     let homedir = getHomeDirectory()
-    // 检查环境变量: CJVS_CANGJIE_HOME
-    let cangjieHomeOpt = getVariable("CJVS_CANGJIE_HOME")
-
     // 读取或创建配置文件
     config = if (exists(homedir.join(ConfigFilePath))) {
         let ff: File = File(homedir.join(ConfigFilePath), OpenMode.Read)
-        let conf = Config.fromJson(JsonReader(ff))
-        conf.cangjieHome = cangjieHomeOpt ?? homedir.join(".cangjie").toString()
-        conf
+        Config.fromJson(JsonReader(ff))
     } else {
         // 创建默认配置
         let conf = Config()
-        conf.cangjieHome = cangjieHomeOpt ?? homedir.join(".cangjie").toString()
         // 创建应用目录
         let configdir = homedir.join(AppConfigPath)
         if (!exists(configdir)) {
@@ -115,7 +107,7 @@ func check(): Bool {
         println("CJVS_CANGJIE_HOME: ${config.cangjieHome} is not a symbolic link, you should remove it.")
         return false
     }
-    
+
     return true
 }
 
@@ -141,7 +133,7 @@ func remote(args: Array<String>) {
 
 // 获取当前系统可所有的可用版本列表
 func getVersions(): HashMap<String, ArrayList<Version>> {
-    let client = ClientBuilder().readTimeout(Duration.minute).tlsConfig(TlsClientConfig()).build()
+    let client = getHttpClient()
     let res = client.get(config.index)
     let versions = Array<Version>.fromJson(JsonReader(res.body))
     let groups = HashMap<String, ArrayList<Version>>()
@@ -171,10 +163,6 @@ func install(args: Array<String>) {
     if (args.size == 3) {
         // 安装本地文件
         let filepath = args[2]
-        println(version)
-        println(exists(filepath))
-        println(filepath.endsWith(".zip") || filepath.endsWith(".tar.gz"))
-        println(Path(filepath).extensionName)
         if (exists(filepath) && (filepath.endsWith(".zip") || filepath.endsWith(".tar.gz"))) {
             doinstallLocal(version, filepath)
         } else {
@@ -204,31 +192,14 @@ func doinstallLocal(version: String, filepath:String): Unit {
     }
         // 解压
     let extractDir = Directory.createTemp(config.cacheDir)
-    match (Path(filepath).extensionName) {
-        case "zip" =>
-            let (status, out, outerr) = executeWithOutput("unzip", [filepath, "-d", extractDir.toString()])
-            if (status != 0) {
-                println("Install failed: ")
-                println(String.fromUtf8(out))
-                println(String.fromUtf8(outerr))
-                return
-            }
-            ()
-        case "gz" => 
-            let (status, out, outerr) = executeWithOutput("tar", ["-zxf", filepath, "-C", extractDir.toString()])
-            if (status != 0) {
-                println("Install failed: ")
-                println(String.fromUtf8(out))
-                println(String.fromUtf8(outerr))
-                return
-            }
-        ()
-        case _ => println("unsupport file format")
-    }
+    uncompress(Path(filepath).extensionName, filepath, extractDir.toString())
+    
     // 移动到安装目录
     let tempCangjieHome = extractDir.join("cangjie")
     let versionDir = Path(config.storeDir).join(version)
     rename(tempCangjieHome, to: versionDir)
+    // 删除缓存目录
+    removeIfExists(config.cacheDir, recursive: true)
     println("install success.")
 }
 
@@ -237,7 +208,7 @@ func doinstall(version: Version): Unit {
     println("installing ${version.version}...")
     try {
         // 创建请求
-        let client = ClientBuilder().readTimeout(Duration.hour).tlsConfig(TlsClientConfig()).build()
+        let client = getHttpClient()
         let res = client.get(version.url)
         // 创建缓存文件夹
         if (!exists(config.cacheDir)) {
@@ -248,31 +219,7 @@ func doinstall(version: Version): Unit {
         copy(res.body, to: downloadedFile)
         // 解压
         let extractDir = Directory.createTemp(config.cacheDir)
-        match (version.ext) {
-            case "zip" =>
-                // let zipFile = ZipFile("demo.zip") // 创建ZipFile类
-                // zipFile.setRunInThread(false) // 设置是否用子线程运行任务
-                // zipFile.extractAll(config.cacheDir) // 解压到 output 文件夹, 文件夹不存在则创建
-                // zipFile.close()
-                let (status, out, outerr) = executeWithOutput("unzip", [downloadedFile.info.path.toString(), "-d", extractDir.toString()])
-                if (status != 0) {
-                    println("Install failed: ")
-                    println(String.fromUtf8(out))
-                    println(String.fromUtf8(outerr))
-                    return
-                }
-             ()
-            case "tar.gz" => 
-                let (status, out, outerr) = executeWithOutput("tar", ["-zxf", downloadedFile.info.path.toString(), "-C", extractDir.toString()])
-                if (status != 0) {
-                    println("Install failed: ")
-                    println(String.fromUtf8(out))
-                    println(String.fromUtf8(outerr))
-                    return
-                }
-            ()
-            case _ => println("unsupport file format")
-        }
+        uncompress(version.ext, downloadedFile.info.path.toString(), extractDir.toString())
         // 移动到安装目录
         let tempCangjieHome = extractDir.join("cangjie")
         let versionDir = Path(config.storeDir).join(version.version)
@@ -280,7 +227,7 @@ func doinstall(version: Version): Unit {
         println("install success.")
     } finally {
         // 删除缓存文件
-        removeIfExists(config.cacheDir, recursive: true)
+        // removeIfExists(config.cacheDir, recursive: true)
     }
 }
 
@@ -330,7 +277,7 @@ func switchVersion(args: Array<String>) {
         println("${version} is not found.")
         return
     }
-    if (FileInfo(config.cangjieHome).isSymbolicLink()) {
+    if (!exists(config.cangjieHome) || FileInfo(config.cangjieHome).isSymbolicLink()) {
         try {
             removeIfExists(config.cangjieHome, recursive: true)
         } catch (e: Exception) {

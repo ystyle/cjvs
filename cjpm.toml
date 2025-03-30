@@ -14,6 +14,9 @@
   version = "1.0.0"
   package-configuration = {}
 
+[target.x86_64-unknown-windows-gnu] # linux 系统的配置项
+  compile-option = "--static"
+
 [target.x86_64-unknown-linux-gnu] # linux 系统的配置项
   compile-option = "--static"
 [target.x86_64-unknown-linux-gnu.release]
