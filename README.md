@@ -17,9 +17,9 @@
 export CJVS_CANGJIE_HOME="$HOME/.cangjie"
 export CANGJIE_HOME="$CJVS_CANGJIE_HOME"
 export PATH=$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH:${HOME}/.cjpm/bin
-export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${hw_arch}_llvm:${CANGJIE_HOME}/tools/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${uname -m}_llvm:${CANGJIE_HOME}/tools/lib:${LD_LIBRARY_PATH}
 ```
->因为自带的`envsetup.sh`会读取软件连接的原始目录，所以用自己写的环境变量
+>因为自带的`envsetup.sh`会读取软件连接的原始目录，所以用自己写的环境变量2
 
 #### Windows
 - 需要以管理员身份运行powershell
