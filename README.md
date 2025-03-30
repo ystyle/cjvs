@@ -1,5 +1,7 @@
 ### cjvs
 > 2025-03-30 初步支持了windows(powershell), 可以自己手工编译试用
+
+
 仓颉版本管理工具，类似nvm，目前只支持linux平台, 解压依赖tar和unzip
 
 
