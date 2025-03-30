@@ -18,6 +18,7 @@ import std.process.{Process, executeWithOutput}
 let AppConfigPath = Path(".config/cjvs")
 let ConfigFilePath = Path(".config/cjvs/config.json")
 var config = Config()
+var version = "0.0.15"
 
 main(): Unit {
     let args = getCommandLine()[1..]
@@ -26,13 +27,13 @@ main(): Unit {
         usage()
         return
     }
-    // 检查设置
-    if (!check()) {
+     // 打印版本
+    if (args.containsAny(["--version", "-v"])) {
+        printVersion()
         return
     }
-    // 打印版本
-    if (args.containsAny(["--version", "-v"])) {
-        version()
+    // 检查设置
+    if (!check()) {
         return
     }
     let command = args[0]
@@ -71,8 +72,8 @@ GLOBAL OPTIONS:
     )
 }
 
-func version() {
-    println("cjvs version 0.0.15")
+func printVersion() {
+    println("cjvs version ${version}")
 }
 
 func check(): Bool {
@@ -231,7 +232,7 @@ func doinstall(version: Version): Unit {
         println("install success.")
     } finally {
         // 删除缓存文件
-        // removeIfExists(config.cacheDir, recursive: true)
+        removeIfExists(config.cacheDir, recursive: true)
     }
 }
 
@@ -286,7 +287,7 @@ func switchVersion(args: Array<String>) {
             removeIfExists(config.cangjieHome, recursive: true)
         } catch (e: Exception) {
             println(
-                "Switch failed: remove CANGJIE_HOME symbolic link failed: ${config.cangjieHome} failed, please check permissions"
+                "Switch failed: remove CJVS_CANGJIE_HOME symbolic link failed: ${config.cangjieHome} failed, please check permissions"
             )
             return
         }
