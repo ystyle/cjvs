@@ -8,6 +8,7 @@
 ### 安装
 - 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
 - 使用0.59.6版本的仓颉编译: `cjpm build`
+- 如果使用`Archlinux`可以使用`paru -S cjvs`安装
 
 ### 设置
 
@@ -22,11 +23,13 @@ export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${uname -m}_llvm:${CANG
 >因为自带的`envsetup.sh`会读取软件连接的原始目录，所以用自己写的环境变量2
 
 #### Windows
-- 需要以管理员身份运行powershell
-- 设置一个`CJVS_CANGJIE_HOME`环境变量如`%USERPROFILE%/.cangjie`， 要求目录不存在， 工具会自动创建
-- 然后参照[官方文档](https://docs.cangjie-lang.cn/docs/0.53.18/user_manual/source_zh_cn/first_understanding/install_Community.html#windows) 设置， 其中
-  - 临时生效：powershell环境变量的改为执行： `. $env:CJVS_CANGJIE_HOME\envsetup.ps1`
-  - 始终生效： 在官方步骤里的`CANGJIE_HOME`设置为`%CJVS_CANGJIE_HOME%`， 其它走官方步骤
+- 设置一个`CJVS_CANGJIE_HOME`环境变量, 如`%USERPROFILE%/.cangjie`， 要求目录不存在， 工具会自动创建
+- 然后在PATH添加以下内容
+  - `%CANGJIE_HOME%\bin`
+  - `%CANGJIE_HOME%\tools\bin`
+  - `%CANGJIE_HOME%\tools\lib`
+  - `%CANGJIE_HOME%\runtime\lib\windows_x86_64_llvm`
+- 执行cjvs需要以管理员身份运行powershell
 
 ### 使用
 ```shell
@@ -62,6 +65,12 @@ GLOBAL OPTIONS:
   installing 0.53.13...
   installed.
   ```
+- 安装本地压缩版本（zip/tar.gz的目录结构需要和官方提供的一致）
+  ```shell
+  $ cjvs install 0.59.6 ~/Downloads/cangjie-0.59.6-linux_x64.tar.gz
+  installing 0.59.6...
+  installed.
+  ```
 - 显示本地已经安装的仓颉版本
     ```shell
     $ cjvs ls
@@ -77,8 +86,8 @@ GLOBAL OPTIONS:
     Switch success
     Now using version: std_0.33.3
     ```
-- 安装内测版本: 
-  - 自行把仓颉编译器版本复制到`$HOME/.config/cjvs/store`目录
+- 手动添加版本: 
+  - 把仓颉编译器版本复制到`$HOME/.config/cjvs/store`目录
     - 如 `$HOME/.config/cjvs/store/std_0.33.3`， 该目录直接包含`bin、lib、runtime、tools、modules`等目录 
     ```shell
     ~/.config/cjvs$ tree -L 3
