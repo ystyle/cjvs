@@ -18,7 +18,7 @@ import std.process.{Process, executeWithOutput}
 let AppConfigPath = Path(".config/cjvs")
 let ConfigFilePath = Path(".config/cjvs/config.json")
 var config = Config()
-var version = "0.0.15"
+var version = "0.0.16"
 
 main(): Unit {
     let args = getCommandLine()[1..]
