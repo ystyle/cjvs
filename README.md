@@ -6,19 +6,20 @@
 
 
 ### 安装
-- 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
+- 先克隆仓库: `git clone https://github.com/ystyle/cjvs`  
 - 使用0.59.6版本的仓颉编译: `cjpm build`
 - 如果使用`Archlinux`可以使用`paru -S cjvs`安装
 
 ### 设置
 
 #### Linux
+需要安装[OpenSsl](https://cangjie-lang.cn/docs?url=%2F0.53.18%2Fuser_manual%2Fsource_zh_cn%2FAppendix%2Flinux_toolchain_install.html)    
 在`~/.bashrc`或`~/.zshrc`添加以下环境变量， 要求`$HOME/.cangjie`目录不存在， 工具会自动创建
 ```shell
 export CJVS_CANGJIE_HOME="$HOME/.cangjie"
 export CANGJIE_HOME="$CJVS_CANGJIE_HOME"
 export PATH=$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH:${HOME}/.cjpm/bin
-export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${uname -m}_llvm:${CANGJIE_HOME}/tools/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${uname -m}_llvm:${CANGJIE_HOME}/tools/lib:${LD_LIBRARY_PATH}  
 ```
 >因为自带的`envsetup.sh`会读取软件连接的原始目录，所以用自己写的环境变量2
 
