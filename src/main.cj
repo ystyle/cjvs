@@ -27,7 +27,7 @@ main(): Unit {
         usage()
         return
     }
-     // 打印版本
+    // 打印版本
     if (args.containsAny(["--version", "-v"])) {
         printVersion()
         return
@@ -48,6 +48,7 @@ main(): Unit {
         case "list" | "ls" => listVersion(args)
         case "switch" | "use" | "s" => switchVersion(args)
         case "remove" | "rm" => removeVersion(args)
+        case "env" => genenv(args)
         case _ => println("unknow command.")
     }
 }
@@ -124,7 +125,7 @@ func remote(args: Array<String>) {
         if (showChannel != "all" && channel != showChannel) {
             continue
         }
-        sort(versions, key: {v => v.version })
+        sort(versions, key: {v => v.version})
         println("Channel: ${channel}")
         for (version in versions) {
             println("\t${version.version}")
@@ -186,19 +187,19 @@ func install(args: Array<String>) {
 }
 
 // 安装本地文件
-func doinstallLocal(version: String, filepath:String): Unit {
+func doinstallLocal(version: String, filepath: String): Unit {
     // 创建缓存文件夹
     if (!exists(config.cacheDir)) {
         Directory.create(config.cacheDir, recursive: true)
     }
-        // 解压
+    // 解压
     let extractDir = Directory.createTemp(config.cacheDir)
     var ext = Path(filepath).extensionName
     if (ext == "gz") {
         ext = "tar.gz"
     }
     uncompress(ext, filepath, extractDir.toString())
-    
+
     // 移动到安装目录
     let tempCangjieHome = extractDir.join("cangjie")
     let versionDir = Path(config.storeDir).join(version)
@@ -249,11 +250,11 @@ func listVersion(args: Array<String>) {
             used = SymbolicLink.readFrom(h)
         }
     }
-    
+
     if (dirs.size > 0) {
         sort<Path, String>(dirs, key: {p => p.fileName})
     }
-    
+
     println("Installed Cangjie versions(makr up * is in used):")
     for (dir in dirs) {
         print("\t")
@@ -335,5 +336,31 @@ func removeVersion(args: Array<String>) {
         _ = removeIfExists(versiondir, recursive: true)
     } catch (e: Exception) {
         println("remote failed: ${e}")
+    }
+}
+
+func genenv(args: Array<String>) {
+    if (args.size != 2) {
+        println("cjvs env :shell")
+        return
+    }
+    let shell = args[1]
+    match (shell) {
+        case "bash" | "zsh" =>
+            println('export CJVS_CANGJIE_HOME="$HOME/.cangjie"')
+            println('export CANGJIE_HOME="$CJVS_CANGJIE_HOME"')
+            println(
+                'export PATH=$CANGJIE_HOME/bin:$CANGJIE_HOME/tools/bin:$CANGJIE_HOME/debugger/bin:$PATH:$HOME/.cjpm/bin'
+            )
+            println(
+                'export LD_LIBRARY_PATH=$CANGJIE_HOME/runtime/lib/linux_$(uname -m)_llvm:$CANGJIE_HOME/tools/lib:$LD_LIBRARY_PATH'
+            )
+        case "powershell" =>
+            let path = getVariable("PATH") ?? ""
+            println('$env:CJVS_CANGJIE_HOME = \"${config.cangjieHome}\"')
+            println(
+                '$env:PATH = \"${config.cangjieHome}\\bin;${config.cangjieHome}\\tools\\bin;${config.cangjieHome}\\tools\\lib;${config.cangjieHome}\\debugger\\bin;${config.cangjieHome}\\runtime\\lib\\windows_x86_64_llvm;${path}\"'
+            )
+        case _ => println("unsupport shell")
     }
 }
