@@ -34,6 +34,7 @@ export LD_LIBRARY_PATH=${CANGJIE_HOME}/runtime/lib/linux_${uname -m}_llvm:${CANG
 - 设置后要重启powershell(如果已经打开了）
 - 执行cjvs需要以管理员身份运行powershell
 
+
 ### 使用
 ```shell
 $ cjvs
