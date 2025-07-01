@@ -7,49 +7,20 @@ import std.env.{ getCommand }
 
 @Derive[ToString]
 class Config <: JsonSerializable & JsonDeserializable<Config> {
-    var channel: String
-    var _storeDir: String
-    var _cacheDir: String
     var index: String
     var default:?String = None
     init() {
-        this.channel = "beta"
-        this._storeDir = "store"
-        this._cacheDir = "cache"
-        if (CurrentOS == "windows") {
-            let binpath = Path(getCommand()).parent
-            this._storeDir = binpath.join("store").toString()
-            this._cacheDir = binpath.join("cache").toString()
-        }
         this.index = "https://dll.ystyle.top/images/cjvs-index.json"
     }
 
-    public mut prop storeDir: String {
+    public prop storeDir: String {
         get() {
-            if (CurrentOS == "windows") {
-                _storeDir
-            } else if (_storeDir.startsWith("/")) {
-                _storeDir
-            } else {
-                Path(getAppConfigDir()).join(_storeDir).toString()
-            }
-        }
-        set(storeDir) {
-            _storeDir = storeDir
+            Path(getAppConfigDir()).join("store").toString()
         }
     }
-    public mut prop cacheDir: String {
+    public prop cacheDir: String {
         get() {
-            if (CurrentOS == "windows") {
-                _cacheDir
-            } else if (_cacheDir.startsWith("/")) {
-                _cacheDir
-            } else {
-                Path(getAppConfigDir()).join(_cacheDir).toString()
-            }
-        }
-        set(cacheDir) {
-            _cacheDir = cacheDir
+            Path(getAppConfigDir()).join("cache").toString()
         }
     }
     public static func fromJson(r: JsonReader): Config {
@@ -61,9 +32,6 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
                     while (r.peek() != EndObject) {
                         let n = r.readName()
                         match (n) {
-                            case "channel" => res.channel = r.readValue<String>()
-                            case "storeDir" => res._storeDir = r.readValue<String>()
-                            case "cacheDir" => res._cacheDir = r.readValue<String>()
                             case "index" => res.index = r.readValue<String>()
                             case "default" => res.default = r.readValue<Option<String>>()
                             case _ => r.skip()
@@ -79,9 +47,6 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
 
     public func toJson(w: JsonWriter): Unit {
         w.startObject() // start encoding an object
-        w.writeName("channel").writeValue(this.channel) // write name and value pair in current object
-        w.writeName("storeDir").writeValue(this._storeDir)
-        w.writeName("cacheDir").writeValue(this._cacheDir)
         w.writeName("default").writeValue(this.default)
         w.writeName("index").writeValue(this.index)
         w.endObject() // end current object
