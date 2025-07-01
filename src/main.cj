@@ -12,7 +12,7 @@ import std.fs.{Directory, File, Path, exists, OpenMode}
 
 let ConfigFilePath = Path(".config/cjvs/config.json")
 var config = Config()
-var version = "0.0.16"
+var version = "1.0.0"
 var CJVS_MULTISHELL_PATH = ""
 
 main(): Unit {

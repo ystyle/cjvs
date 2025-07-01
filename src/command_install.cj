@@ -28,17 +28,15 @@ func install(args: Array<String>) {
         return
     }
     let groups = getVersions()
-    var versions = groups[config.channel]
-    if (args.size >= 3 && ["beta", "lts"].contains(args[2]) && groups.contains(args[2])) {
-        versions = groups[args[2]]
-    }
-    for (item in versions) {
-        if (item.version == version) {
-            doinstall(item)
-            if (config.default.isNone()) {
-                defaultVersion(["default", version])
+    for ((channel, versions) in groups) {
+        for (item in versions) {
+            if (item.version == version) {
+                doinstall(item)
+                if (config.default.isNone()) {
+                    defaultVersion(["default", version])
+                }
+                return
             }
-            return
         }
     }
     println("${version} is not found")
