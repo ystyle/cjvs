@@ -1,10 +1,52 @@
 package cjvs
 
 import std.fs.{Path, Directory, rename}
-import std.collection.ArrayList
+import std.collection.{ArrayList, HashMap}
 import net.http.{ClientBuilder}
 import net.tls.{TlsClientConfig, CertificateVerifyMode}
-import std.process.{Process, executeWithOutput}
+import std.process.{executeWithOutput}
+import std.env.{getVariable, getCommand}
+import encoding.json.stream.*
+
+@When[arch == "aarch64"]
+var arch = "aarch64"
+@When[arch == "x86_64"]
+var arch = "x86_64"
+@When[os == "Linux"]
+var CurrentOS = "linux"
+@When[os == "Windows"]
+var CurrentOS = "windows"
+
+func getAppConfigDir():String {
+    let home = if (CurrentOS == "windows") {
+       Path(getCommand()).parent.toString()
+    } else {
+        getVariable("HOME")
+    } ?? ""
+    return Path(home).join(".config").join("cjvs").toString()
+}
+
+func getAppConfigFile():Path {
+    return Path(getAppConfigDir()).join("config.json")
+}
+
+// 获取当前系统可所有的可用版本列表
+func getVersions(): HashMap<String, ArrayList<Version>> {
+    let client = getHttpClient()
+    let res = client.get(config.index)
+    let versions = Array<Version>.fromJson(JsonReader(res.body))
+    let groups = HashMap<String, ArrayList<Version>>()
+    for (version in versions) {
+        if (version.os == CurrentOS && version.arch == arch) {
+            if (groups.contains(version.channel)) {
+                groups[version.channel].add(version)
+            } else {
+                groups[version.channel] = ArrayList<Version>([version])
+            }
+        }
+    }
+    return groups
+}
 
 extend Array<String> {
     public func containsAny(items: Array<String>): Bool {
@@ -32,18 +74,11 @@ func listdir(path: Path): ArrayList<Path> {
     return dirs
 }
 
-@When[arch == "aarch64"]
-var arch = "aarch64"
-@When[arch == "x86_64"]
-var arch = "x86_64"
-@When[os == "Linux"]
-var CurrentOS = "linux"
-@When[os == "Windows"]
-var CurrentOS = "windows"
 
 func getHttpClient() {
     var tls = TlsClientConfig()
-    if (CurrentOS == "windows") {
+    if (CurrentOS == "windows" || (getVariable("NO_VERIFY_SSL") ?? "NO") == "YES" ) {
+        println("Skip ssl verification")
         tls.verifyMode = CertificateVerifyMode.TrustAll
     }
     return ClientBuilder().readTimeout(Duration.minute).tlsConfig(tls).build()

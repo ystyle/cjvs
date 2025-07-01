@@ -9,3 +9,5 @@ module-lock.json
 target
 .cache
 *.cj.macrocall
+*.zip
+scripts

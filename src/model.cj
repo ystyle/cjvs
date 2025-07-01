@@ -1,31 +1,26 @@
 package cjvs
 
 import encoding.json.stream.*
-import std.fs.Path
-import std.process.CurrentProcess
+import std.fs.{Path, File, OpenMode}
 import std.deriving.*
-import std.env.{getHomeDirectory, getCommand, getVariable}
+import std.env.{ getCommand }
 
 @Derive[ToString]
 class Config <: JsonSerializable & JsonDeserializable<Config> {
     var channel: String
     var _storeDir: String
     var _cacheDir: String
-    var cangjieHome: String
     var index: String
+    var default:?String = None
     init() {
         this.channel = "beta"
-        this._storeDir = "cjvs/store"
-        this._cacheDir = "cjvs/cache"
+        this._storeDir = "store"
+        this._cacheDir = "cache"
         if (CurrentOS == "windows") {
             let binpath = Path(getCommand()).parent
             this._storeDir = binpath.join("store").toString()
             this._cacheDir = binpath.join("cache").toString()
         }
-        // 检查环境变量: CJVS_CANGJIE_HOME
-        let homedir = getHomeDirectory()
-        let cangjieHomeOpt = getVariable("CJVS_CANGJIE_HOME")
-        this.cangjieHome = cangjieHomeOpt ?? homedir.join(".cangjie").toString()
         this.index = "https://dll.ystyle.top/images/cjvs-index.json"
     }
 
@@ -36,8 +31,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
             } else if (_storeDir.startsWith("/")) {
                 _storeDir
             } else {
-                let homedir = getHomeDirectory()
-                homedir.join(".config").join(_storeDir).toString()
+                Path(getAppConfigDir()).join(_storeDir).toString()
             }
         }
         set(storeDir) {
@@ -51,8 +45,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
             } else if (_cacheDir.startsWith("/")) {
                 _cacheDir
             } else {
-                let homedir = getHomeDirectory()
-                homedir.join(".config").join(_cacheDir).toString()
+                Path(getAppConfigDir()).join(_cacheDir).toString()
             }
         }
         set(cacheDir) {
@@ -72,6 +65,7 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
                             case "storeDir" => res._storeDir = r.readValue<String>()
                             case "cacheDir" => res._cacheDir = r.readValue<String>()
                             case "index" => res.index = r.readValue<String>()
+                            case "default" => res.default = r.readValue<Option<String>>()
                             case _ => r.skip()
                         }
                     }
@@ -85,11 +79,20 @@ class Config <: JsonSerializable & JsonDeserializable<Config> {
 
     public func toJson(w: JsonWriter): Unit {
         w.startObject() // start encoding an object
-        w.writeName("channel").writeValue(channel) // write name and value pair in current object
-        w.writeName("storeDir").writeValue(_storeDir)
-        w.writeName("cacheDir").writeValue(_cacheDir)
-        w.writeName("index").writeValue(index)
+        w.writeName("channel").writeValue(this.channel) // write name and value pair in current object
+        w.writeName("storeDir").writeValue(this._storeDir)
+        w.writeName("cacheDir").writeValue(this._cacheDir)
+        w.writeName("default").writeValue(this.default)
+        w.writeName("index").writeValue(this.index)
         w.endObject() // end current object
+    }
+
+    public func save(): Unit {
+        let ff: File = File(getAppConfigFile(), OpenMode.Write)
+        let jr = JsonWriter(ff)
+        this.toJson(jr)
+        jr.flush()
+        ff.flush()
     }
 }
 
@@ -120,7 +123,7 @@ class Version <: JsonSerializable & JsonDeserializable<Version> {
                             case "url" => res.url = r.readValue<String>()
                             case "ext" => res.ext = r.readValue<String>()
                             case "sha256sum" => res.sha256sum = r.readValue<String>()
-                            case _ => ()
+                            case _ => r.skip()
                         }
                     }
                     r.endObject()

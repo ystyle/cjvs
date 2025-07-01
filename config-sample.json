@@ -2,6 +2,6 @@
     "channel": "beta",
     "storeDir": "cjvs/store",
     "cacheDir": "cjvs/cache",
-    "cangjieHome": "/home/ystyle/.cangjie",
+    "default": "0.59.3",
     "index": "http://192.168.3.41:1080/index.json"
 }
