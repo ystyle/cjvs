@@ -6,8 +6,8 @@
 > - 2025-07-04 因为添加了不同的shell进程，可切换不同版本的功能，当前widnows 版本暂时不可用
 
 ### 功能
-- 列出可在线安装的公测版本
-- 在线安装公测的仓颉版本
+- 列出可在线安装的官方发布版本
+- 在线安装官方发布版本
 - 离线安装zip/tar.gz版本(需要按官方的目录结构，可离线安装内测版本)
 - 列出已安装的版本
 - 在每个shell/或者终端模拟器页签中切换并使用不同的仓颉版本
@@ -72,9 +72,6 @@ GLOBAL OPTIONS:
 ```
 
 示例
-- 检查设置
-  - 检查`CJVS_CANGJIE_HOME`环境变量，是否已经设置，指向的目录必需不存在或者是个软件连接
-  - 检查通过会打印帮助
 - 显示可用公测版本
   ```shell
   $ cjvs rls            
@@ -82,7 +79,7 @@ GLOBAL OPTIONS:
         0.53.13
         0.53.18
   ```
-- 在线安装版本
+- 在线安装版本，第一次安装的版本会被设置为默认版本
   ```shell
   $ cjvs install 0.53.13
   installing 0.53.13...
@@ -95,6 +92,10 @@ GLOBAL OPTIONS:
   installing 0.59.6...
   installed.
   ```
+- 设置启动shell时默认的版本
+  ```shell
+  $ cjvs default 0.53.13
+  ```
 - 显示本地已经安装的仓颉版本
     ```shell
     $ cjvs ls
@@ -104,12 +105,13 @@ GLOBAL OPTIONS:
     	  std_0.32.5
     	* std_0.33.3
     ``` 
-- 切换版本
+- 切换版本, 可以切换当前shell进程(或终端模拟器的页签)的仓颉版本，每个shell进程可以有不同的版本。
     ```shell
     $ cjvs switch std_0.33.3
     Switch success
     Now using version: std_0.33.3
     ```
+    ![mult shell](assets/multishell.png)
 - 手动添加版本: 
   - 把仓颉编译器版本复制到`$HOME/.config/cjvs/store`目录
     - 如 `$HOME/.config/cjvs/store/std_0.33.3`， 该目录直接包含`bin、lib、runtime、tools、modules`等目录 
