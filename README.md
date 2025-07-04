@@ -5,8 +5,9 @@
 > - 2025-03-30 初步支持了windows(powershell), 可以自己手工编译试用
 > - 2025-07-04 因为添加了不同的shell进程，可切换不同版本的功能，当前widnows 版本暂时不可用
 
+
 已知问题:
-0.1.1 版本， 如果切换到0.59及以下版本需要设置`export CANGJIE_HOME=$CJVS_MULTISHELL_PATH`, 因为std外的包(如net/encoding待是从CANGJIE_HOME环境变量导入的)
+- 0.1.1 版本， 如果切换到0.59及以下版本需要设置`export CANGJIE_HOME=$CJVS_MULTISHELL_PATH`, 因为std外的包(如net/encoding待是从CANGJIE_HOME环境变量导入的)
 
 ### 功能
 - 列出可在线安装的官方发布版本
