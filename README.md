@@ -21,7 +21,7 @@
 ### 安装
 - 先克隆仓库: `git clone https://github.com/ystyle/cjvs`  
 - 使用0.59.6版本的仓颉编译: `cjpm build`
-- 如果使用`Archlinux`可以使用`paru -S cjvs`安装
+- 如果使用`Archlinux`可以使用`paru -S cjvs-bin`安装
   >本仓库Release里的linux-amd64版本是在archlinux构建的，在较老的linux发行版可能不支持。
 
 ### 设置
