@@ -10,11 +10,11 @@ func install(args: Array<String>) {
         return
     }
     let version = args[1]
-    if (exists(Path(config.storeDir).join(version))) {
-        println("already installed ${version}")
-        return
-    }
     if (args.size == 3) {
+        if (exists(Path(config.storeDir).join(version))) {
+            println("already installed ${version}")
+            return
+        }
         // 安装本地文件
         let filepath = args[2]
         if (exists(filepath) && (filepath.endsWith(".zip") || filepath.endsWith(".tar.gz"))) {
@@ -27,10 +27,15 @@ func install(args: Array<String>) {
         }
         return
     }
+    // 安装线上版本
     let groups = getVersions()
     for ((channel, versions) in groups) {
         for (item in versions) {
             if (item.version == version) {
+                if (exists(Path(config.storeDir).join(version))) {
+                    println("already installed ${version}")
+                    return
+                }
                 doinstall(item)
                 if (config.default.isNone()) {
                     defaultVersion(["default", version])
@@ -39,7 +44,7 @@ func install(args: Array<String>) {
             }
         }
     }
-    println("${version} is not found")
+    println("remote version: ${version} is not found")
 }
 
 // 安装本地文件
