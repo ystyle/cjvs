@@ -17,16 +17,16 @@ var CurrentOS = "linux"
 @When[os == "Windows"]
 var CurrentOS = "windows"
 
-func getAppConfigDir():String {
-    let home = if (CurrentOS == "windows") {
-       Path(getCommand()).parent.toString()
+func getAppConfigDir(): String {
+    if (CurrentOS == "windows") {
+        return Path(getCommand()).parent.toString()
     } else {
-        getVariable("HOME")
-    } ?? ""
-    return Path(home).join(".config").join("cjvs").toString()
+        let home = getVariable("HOME") ?? ""
+        return Path(home).join(".config").join("cjvs").toString()
+    }
 }
 
-func getAppConfigFile():Path {
+func getAppConfigFile(): Path {
     return Path(getAppConfigDir()).join("config.json")
 }
 
@@ -74,10 +74,9 @@ func listdir(path: Path): ArrayList<Path> {
     return dirs
 }
 
-
 func getHttpClient() {
     var tls = TlsClientConfig()
-    if (CurrentOS == "windows" || (getVariable("NO_VERIFY_SSL") ?? "NO") == "YES" ) {
+    if (CurrentOS == "windows" || (getVariable("NO_VERIFY_SSL") ?? "NO") == "YES") {
         println("Skip ssl verification")
         tls.verifyMode = CertificateVerifyMode.TrustAll
     }
