@@ -87,39 +87,10 @@ func getHttpClient() {
 func uncompress(ext: String, source: String, target: String) {
     match (ext) {
         case "zip" =>
-            // var sourcefile = source
-            // if (!source.endsWith(".zip")) {
-            //     sourcefile = "${source}.zip"
-            //     rename(source, to: sourcefile) // powershell 的解压看文件后缀名
-            // }
-
             let zipFile = ZipFile(source)  // 创建ZipFile类
             zipFile.setRunInThread(false)                 // 设置是否用子线程运行任务
             zipFile.extractAll(target)                // 解压到 output 文件夹, 文件夹不存在则创建
             zipFile.close()                               // 资源关闭
-            // // let command = "Expand-Archive -Path '${sourcefile}' -DestinationPath '${target}'  -Force"
-            // let command = """
-            //     Add-Type -AssemblyName System.IO.Compression.FileSystem
-            //     try {
-            //         Write-Host "start: $(Get-Date -Format 'HH:mm:ss')"
-            //         [System.IO.Compression.ZipFile]::ExtractToDirectory('${sourcefile}', '${target}')
-            //         Write-Host "start: $(Get-Date -Format 'HH:mm:ss')"
-            //         Write-Host "uncompress success"
-            //     } catch {
-            //         $errorMsg = $_.Exception.Message
-            //         $base64Error = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($errorMsg))
-            //         Write-Error "uncompress failed $($_.Exception.Message)"
-            //         exit 1
-            //     }
-            // """
-            // println(command)
-            // let (status, out, outerr) = executeWithOutput("powershell.exe", ["-Command", command])
-            // if (status != 0) {
-            //     println("Install failed: ")
-            //     println(String.fromUtf8(out))
-            //     println(String.fromUtf8(outerr))
-            //     return
-            // }
             ()
         case _ => println("unsupport file format")
     }
