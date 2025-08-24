@@ -3,14 +3,7 @@ package cjvs
 import encoding.json.stream.JsonReader
 import std.env.{getCommandLine,  getVariable}
 import std.fs.{Directory, File, Path, exists, OpenMode}
-// import zip4cj.*
-// import compress.zlib.*
-// import compress4cj.*
-// import compress4cj.compress.*
-// import compress4cj.compress.archivers.*
-// import compress4cj.compress.compressors.*
 
-let ConfigFilePath = Path(".config/cjvs/config.json")
 var config = Config()
 var version = "1.0.0"
 var CJVS_MULTISHELL_PATH = ""
@@ -62,12 +55,35 @@ func printVersion() {
 func printConfig() {
     println("Add the following script to your shell configuration file:")
     println("")
-    println("zsh:")
-    println('\teval "$(cjvs env zsh)"')
-    println("bash:")
-    println('\teval "$(cjvs env bash)"')
-    println("powershell:")
-    println("\tcjvs env powershell | Out-String | Invoke-Expression")
+    if (CurrentOS == "linux") {
+        println("zsh:")
+        println('\teval "$(cjvs env zsh)"')
+        println("bash:")
+        println('\teval "$(cjvs env bash)"')
+        println("nushell:")
+        println("""
+if (is-admin) {
+  cjvs env nushell | save -f ~/.cjvs.nu
+  use ~/.cjvs.nu
+  echo "cjvs loaded."
+}
+""")
+    }
+    if (CurrentOS == "windows") {
+        println("powershell:")
+        println("\tcjvs.exe env powershell | Out-String | Invoke-Expression")
+        println("nushell:")
+        println("""
+    if (is-admin) {
+        cjvs env nushell | save -f ~/.cjvs.nu
+        use ~/.cjvs.nu
+    }
+""")
+    }
+
+    println("elvish:")
+    println("\teval (cjvs.exe env elvish | slurp)")
+    
 }
 
 func check(): Bool {

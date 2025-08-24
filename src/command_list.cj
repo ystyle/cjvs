@@ -6,7 +6,7 @@ import std.env.getVariable
 
 
 // 列出本地已安装的版本
-func listVersion(args: Array<String>) {
+func listVersion(_: Array<String>) {
     let configdir = Path(config.storeDir)
     var dirs = listdir(configdir).toArray()
     var used: ?Path = None
