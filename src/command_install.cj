@@ -90,12 +90,10 @@ func doinstall(version: Version): Unit {
         // 移动到安装目录
         let tempCangjieHome = extractDir.join("cangjie")
         let versionDir = Path(config.storeDir).join(version.version)
-        println(tempCangjieHome)
-        println(versionDir)
         rename(tempCangjieHome, to: versionDir)
         println("install success.")
     } finally {
         // 删除缓存文件
-        // removeIfExists(config.cacheDir, recursive: true)
+        removeIfExists(config.cacheDir, recursive: true)
     }
 }
