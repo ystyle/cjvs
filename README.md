@@ -73,6 +73,10 @@ if ([Security.Principal.WindowsPrincipal]::new(
 ```
 - 可以正常执行cjvs命令了， 如`cjvs.exe install 1.0.0`
 
+##### 在`非管理员 PowerShell` 使用
+- 需要在【设置 - 更新和安全 - 开发者选项 - 开发人员模式】启用， 然后重启系统， 然后在上述文件添加的内容改成只要最后一行添加`cjvs.exe env powershell | Out-String | Invoke-Expression`  
+- 如果还提示需要管理员权限， 在【secpol.msc → 本地策略 → 用户权限分配 → 创建符号链接 】添加当前登录用户，再重启系统试试。  
+- 如果都不行，就只能回退到上小节，只在管理员会话里加载使用了。
 
 ### 使用
 ```shell
