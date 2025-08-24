@@ -1,3 +1,4 @@
 version = 0
 
 [requires]
+  zip4cj = {commitId = "3d42d43792c4b36e4e697fae2177bef121686f9b", git = "https://gitcode.com/Cangjie-TPC/zip4cj", output-type = "static", tag = "0.59.6"}

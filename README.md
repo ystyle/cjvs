@@ -1,9 +1,10 @@
 ### cjvs
-仓颉版本管理工具，类似nvm，目前只支持linux平台, 解压依赖tar和unzip
+仓颉版本管理工具，类似nvm，目前支持linux， windows平台. linux解压依赖tar和unzip
 
 更新日志: 
 > - 2025-03-30 初步支持了windows(powershell), 可以自己手工编译试用
 > - 2025-07-04 因为添加了不同的shell进程，可切换不同版本的功能，当前widnows 版本暂时不可用
+> - 2025-08-24 windows 也能使用了， 并新增了`elvish`和`nushell`的支持
 
 
 已知问题:
@@ -37,22 +38,40 @@
   ```
 2. 添加shell配置，按使用的bash或zsh添加以下配置
   ```shell
-  # zsh添加这个
+  # zsh
   eval "$(cjvs env zsh)"
-  # bash 添加这个
+
+  # bash
   eval "$(cjvs env bash)"
+ 
+  # nushell： 这两行
+  cjvs env nushell | save -f ~/.cjvs.nu
+  use ~/.cjvs.nu
+ 
+  # elvish 
+  eval (cjvs.exe env elvish | slurp)
   ```
 
 
 #### Windows
-- 设置一个`CJVS_CANGJIE_HOME`环境变量, 如`%USERPROFILE%/.cangjie`， 要求目录不存在， 工具会自动创建
-- 然后在PATH添加以下内容
-  - `%CANGJIE_HOME%\bin`
-  - `%CANGJIE_HOME%\tools\bin`
-  - `%CANGJIE_HOME%\tools\lib`
-  - `%CANGJIE_HOME%\runtime\lib\windows_x86_64_llvm`
-- 设置后要重启powershell(如果已经打开了）
-- 执行cjvs需要以管理员身份运行powershell
+- 编译安装好后，把以下文件放到一个目录，并添加到Path环境变量
+  - `cjvs.exe`
+  - `libcangjie-runtime.dll`: 来自`$CANGJIE_HOME\runtime\lib\windows_x86_64_llvm\libcangjie-runtime.dll`
+  - `libsecurec.dll`: 来自`$CANGJIE_HOME\runtime\lib\windows_x86_64_llvm\libsecurec.dll`
+- 找到并打开自己的 PowerShell 启动脚本, 可以执行`$PSVersionTable.PSVersion`查看版本
+  - PowerShell 5： `%userprofile%\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`
+  - PowerShell 6/7：`%userprofile%\Documents\PowerShell\Microsoft.PowerShell_profile.ps1`
+- 并添加以下内容(创建软件连接需要管理员权限，所有只在有管理员权限时才加载cjvs提供的环境)：
+```powershell
+# 仅在管理员会话里加载 cjvs
+if ([Security.Principal.WindowsPrincipal]::new(
+        [Security.Principal.WindowsIdentity]::GetCurrent()
+    ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+) {
+    cjvs.exe env powershell | Out-String | Invoke-Expression
+}
+```
+- 可以正常执行cjvs命令了， 如`cjvs.exe install 1.0.0`
 
 
 ### 使用
