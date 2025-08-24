@@ -61,7 +61,7 @@
 - 找到并打开自己的 PowerShell 启动脚本, 可以执行`$PSVersionTable.PSVersion`查看版本
   - PowerShell 5： `%userprofile%\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`
   - PowerShell 6/7：`%userprofile%\Documents\PowerShell\Microsoft.PowerShell_profile.ps1`
-- 并添加以下内容(创建软件连接需要管理员权限，所有只在有管理员权限时才加载cjvs提供的环境)：
+- 并添加以下内容(创建软件连接需要管理员权限，所以配置成只在有管理员权限时才加载cjvs提供的环境)：
 ```powershell
 # 仅在管理员会话里加载 cjvs
 if ([Security.Principal.WindowsPrincipal]::new(
@@ -71,7 +71,7 @@ if ([Security.Principal.WindowsPrincipal]::new(
     cjvs.exe env powershell | Out-String | Invoke-Expression
 }
 ```
-- 可以正常执行cjvs命令了， 如`cjvs.exe install 1.0.0`
+- 以管理员身份启动, 可以正常执行cjvs命令了， 如`cjvs.exe install 1.0.0`
 
 ##### 在`非管理员 PowerShell` 使用
 - 需要在【设置 - 更新和安全 - 开发者选项 - 开发人员模式】启用， 然后重启系统， 然后在上述文件添加的内容改成只要最后一行添加`cjvs.exe env powershell | Out-String | Invoke-Expression`  
