@@ -21,34 +21,35 @@ func genenv(args: Array<String>) {
     if (!exists(Path(shellpath).parent)) {
         Directory.create(Path(shellpath).parent, recursive: true)
     }
+    if (let Some(v) <- config.default) {
+        let defaultV = Path(config.storeDir).join(v)
+        SymbolicLink.create(Path(shellpath), to: defaultV)
+    }
     let shell = args[1]
     match (shell) {
         case "bash" | "zsh" =>
-            if (let Some(v) <- config.default) {
-                let defaultV = Path(config.storeDir).join(v)
-                SymbolicLink.create(Path(shellpath), to: defaultV)
-            }
-            println('export CJVS_MULTISHELL_PATH=\"${shellpath}\"')
-            println('export CANGJIE_HOME=\"${shellpath}\"')
-            println(
-                'export PATH=$CJVS_MULTISHELL_PATH/bin:$CJVS_MULTISHELL_PATH/tools/bin:$CJVS_MULTISHELL_PATH/debugger/bin:$PATH:$HOME/.cjpm/bin'
-            )
-            println(
-                'export LD_LIBRARY_PATH=$CJVS_MULTISHELL_PATH/runtime/lib/linux_$(uname -m)_llvm:$CJVS_MULTISHELL_PATH/tools/lib:$LD_LIBRARY_PATH'
-            )
+            let shellSource = """
+export CJVS_MULTISHELL_PATH="${shellpath}"
+export CANGJIE_HOME="${shellpath}"
+export PATH=$CJVS_MULTISHELL_PATH/bin:$CJVS_MULTISHELL_PATH/tools/bin:$CJVS_MULTISHELL_PATH/debugger/bin:$PATH:$HOME/.cjpm/bin
+export LD_LIBRARY_PATH=$CJVS_MULTISHELL_PATH/runtime/lib/linux_$(uname -m)_llvm:$CJVS_MULTISHELL_PATH/tools/lib:$LD_LIBRARY_PATH
+"""
+            println(shellSource)
         case "nushell" =>
             let nushellSource = """
 export-env {
-let root = '${shellpath}'
-$env.CANGJIE_HOME = $root
-$env.CJVS_MULTISHELL_PATH = $root
-$env.PATH = ([
-    ($root | path join 'bin')
-    ($root | path join 'tools/bin')
-    ($root | path join 'tools/lib')
-    ($root | path join 'debugger/bin')
-    ($root | path join 'runtime/lib/windows_x86_64_llvm')
-] | append $env.PATH | uniq)
+    let root = '${shellpath}'
+    $env.CANGJIE_HOME = $root
+    $env.CJVS_MULTISHELL_PATH = $root
+    $env.PATH = ([
+        ($root | path join 'bin')
+        ($root | path join 'tools/bin')
+        ($root | path join 'tools/lib')
+    ] | append $env.PATH | uniq)
+    $env.LD_LIBRARY_PATH = ([
+        ($root | path join '/runtime/lib/linux_' + $nu.os-info.arch + '_llvm')
+        ($root | path join 'tools/lib')
+    ] | append $env.LD_LIBRARY_PATH | uniq)
 }
 """
             println(nushellSource)
@@ -90,8 +91,7 @@ func genenv(args: Array<String>) {
             println('$env:CANGJIE_HOME = \"${shellpath}\"')
             println('$env:CJVS_MULTISHELL_PATH = \"${shellpath}\"')
             println(
-                '$env:PATH = \"${shellpath}\\bin;${shellpath}\\tools\\bin;${shellpath}\\tools\\lib;${shellpath}\\debugger\\bin;${shellpath}\\runtime\\lib\\windows_x86_64_llvm;${path}\"'
-            )
+                '$env:PATH = \"${shellpath}\\bin;${shellpath}\\tools\\bin;${shellpath}\\tools\\lib;${shellpath}\\debugger\\bin;${shellpath}\\runtime\\lib\\windows_x86_64_llvm;${path}\"')
         case "nushell" =>
             let nushellSource = """
 export-env {
@@ -108,7 +108,7 @@ $env.PATH = ([
 }
 """
             println(nushellSource)
-                case "elvish" =>
+        case "elvish" =>
             let elvishSource = """
 set-env CJVS_MULTISHELL_PATH "${shellpath}"
 set-env CANGJIE_HOME "${shellpath}"
