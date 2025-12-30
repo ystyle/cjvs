@@ -1,12 +1,15 @@
 package cjvs
 
-import encoding.json.stream.JsonReader
-import std.env.{getCommandLine,  getVariable}
-import std.fs.{Directory, File, Path, exists, OpenMode}
+import stdx.encoding.json.stream.JsonReader
+import std.env.{getCommandLine, getVariable}
+import std.fs.{Directory, File, exists, OpenMode}
+import cjvs.stdx.{handleCommand, stdxEnv}
+import cjvs.model.Config
+import cjvs.config.{config, CJVS_MULTISHELL_PATH}
+import cjvs.tools.{getAppConfigDir, getAppConfigFile, CurrentOS, ContainsArray}
+import cjpminfo.*
 
-var config = Config()
-var version = "1.0.0"
-var CJVS_MULTISHELL_PATH = ""
+let version: String = @ModuleVer("0.3.0")
 
 main(): Unit {
     let args = getCommandLine()[1..]
@@ -33,6 +36,7 @@ main(): Unit {
     if (!check()) {
         return
     }
+
     let command = args[0]
 
     // 执行命令
@@ -44,6 +48,8 @@ main(): Unit {
         case "default" => defaultVersion(args)
         case "remove" | "rm" => removeVersion(args)
         case "env" => genenv(args)
+        case "stdx" => handleCommand(args)
+        case "stdx-env" => stdxEnv(args)
         case _ => println("unknow command.")
     }
 }
@@ -55,13 +61,14 @@ func printVersion() {
 func printConfig() {
     println("Add the following script to your shell configuration file:")
     println("")
-    if (CurrentOS == "linux") {
+    if (CurrentOS == "linux" || CurrentOS == "macos") {
         println("zsh:")
         println('\teval "$(cjvs env zsh)"')
         println("bash:")
         println('\teval "$(cjvs env bash)"')
         println("nushell:")
-        println("""
+        println(
+            """
 if (is-admin) {
   cjvs env nushell | save -f ~/.cjvs.nu
   use ~/.cjvs.nu
@@ -82,28 +89,34 @@ if (is-admin) {
     }
 
     println("elvish:")
-    println("\teval (cjvs.exe env elvish | slurp)")
-    
+    if (CurrentOS == "windows") {
+        println("\teval (cjvs.exe env elvish | slurp)")
+    } else {
+        println("\teval (cjvs env elvish | slurp)")
+    }
 }
 
 func check(): Bool {
     // 读取或创建配置文件
+    let configdir = getAppConfigDir()
     config = if (exists(getAppConfigFile())) {
         let ff: File = File(getAppConfigFile(), OpenMode.Read)
-        Config.fromJson(JsonReader(ff))
+        let conf = Config.fromJson(JsonReader(ff))
+        conf.initPaths(configdir)
+        conf
     } else {
         // 创建默认配置
         let conf = Config()
+        conf.initPaths(configdir)
         // 创建应用目录
-        let configdir = getAppConfigDir()
         if (!exists(configdir)) {
             Directory.create(configdir)
         }
         // 保存初始配置
-        conf.save()
+        conf.save(getAppConfigFile())
         // 创建存储目录
-        if (!exists(config.storeDir)) {
-            Directory.create(config.storeDir)
+        if (!exists(conf.storeDir)) {
+            Directory.create(conf.storeDir)
         }
         conf
     }

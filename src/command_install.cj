@@ -2,6 +2,9 @@ package cjvs
 
 import std.fs.{Directory, File, Path, removeIfExists, exists, rename}
 import std.io.{copy}
+import cjvs.config.config
+import cjvs.model.Version
+import cjvs.tools.{getHttpClient, uncompress, getVersions}
 
 // 安装版本
 func install(args: Array<String>) {

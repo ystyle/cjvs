@@ -1,6 +1,7 @@
 package cjvs
 import std.fs.{Path, exists, removeIfExists, FileInfo, SymbolicLink}
 import std.env.getVariable
+import cjvs.config.config
 
 // 删除已安装版本
 func removeVersion(args: Array<String>) {

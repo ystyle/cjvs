@@ -1,6 +1,7 @@
 package cjvs
 
 import std.sort.sort
+import cjvs.tools.getVersions
 
 // 在控制台列出所有的可用版本
 func remote(args: Array<String>) {
