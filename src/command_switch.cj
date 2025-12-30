@@ -2,6 +2,7 @@ package cjvs
 
 import std.fs.{exists, removeIfExists, SymbolicLink, Path}
 import std.env.getVariable
+import cjvs.config.{config}
 
 // 切换版本
 func switchVersion(args: Array<String>) {

@@ -3,14 +3,15 @@ package cjvs
 import std.fs.{Path, exists, FileInfo, SymbolicLink}
 import std.sort.sort
 import std.env.getVariable
-
+import cjvs.config.{config}
+import cjvs.tools.listdir
 
 // 列出本地已安装的版本
 func listVersion(_: Array<String>) {
     let configdir = Path(config.storeDir)
     var dirs = listdir(configdir).toArray()
     var used: ?Path = None
-    
+
     if (let Some(v) <- getVariable("CJVS_MULTISHELL_PATH") && exists(v)) {
         let h = Path(v)
         used = h

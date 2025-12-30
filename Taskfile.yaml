@@ -1,0 +1,24 @@
+version: "3"
+
+vars:
+  VERSION:
+    sh: grep "version = " cjpm.toml | grep -v cjc-version | head -1 | awk -F '"' '{print $2}'
+
+tasks:
+  build:
+    cmds:
+      - cjpm build
+      - cp ./target/release/bin/main ./target/release/bin/cjvs
+      - zip -j cjvs_v{{.VERSION}}_linux_amd64.zip ./target/release/bin/cjvs
+  package-arch:
+    deps:
+      - build
+    cmds:
+      - cp scripts/archlinux/PKGBUILD.template scripts/archlinux/PKGBUILD
+      - sed -i 's/0.0.1/{{.VERSION}}/g' scripts/archlinux/PKGBUILD
+      - sed -i "s/SHA256SUM/$(sha256sum cjvs_v{{.VERSION}}_linux_amd64.zip | awk '{print $1}')/g" scripts/archlinux/PKGBUILD
+      - cp cjvs_v{{.VERSION}}_linux_amd64.zip scripts/archlinux/
+      - cd scripts/archlinux && makepkg --printsrcinfo > .SRCINFO && makepkg -f
+      - cp scripts/archlinux/PKGBUILD ${HOME}/Code/Linux/cjvs/
+      - cp scripts/archlinux/.SRCINFO ${HOME}/Code/Linux/cjvs/
+

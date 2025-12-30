@@ -1,22 +1,31 @@
 [dependencies]
-zip4cj = {git = "https://gitcode.com/Cangjie-TPC/zip4cj", tag = "0.59.6", output-type = "static"}
+# zip4cj = {git = "https://gitcode.com/Cangjie-TPC/zip4cj", branch = "cjc_1.0.4", output-type = "static"}
+zip4cj = { path = "../zip4cj/", output-type = "static"}
+cjpminfo = { git = "https://github.com/ystyle/cjpminfo.git", branch = "master", output-type = "static"}
 
 [package]
-  cjc-version = "0.53.4"
-  compile-option = "--static-std --static-libs"
+  cjc-version = "1.0.0"
+  compile-option = ""
   description = "仓颉编译器版本切换工具"
   link-option = ""
   name = "cjvs"
   output-type = "executable"
   src-dir = "src"
   target-dir = ""
-  version = "1.0.0"
+  version = "0.3.0"
   package-configuration = {}
 
-[target.x86_64-unknown-windows-gnu] # linux 系统的配置项
+[target.x86_64-unknown-windows-gnu] # wondows 系统的配置项
   compile-option = "--static-std"
 
 [target.x86_64-unknown-linux-gnu] # linux 系统的配置项
-  compile-option = "--static"
+  compile-option = "--static "
 [target.x86_64-unknown-linux-gnu.release]
-  compile-option = "-o2"
+  compile-option = "-O2"
+
+[target.x86_64-unknown-linux-gnu.bin-dependencies]
+  path-option = [ "${CANGJIE_STDX_PATH}" ]
+
+
+[profile.build]
+incremental = true
