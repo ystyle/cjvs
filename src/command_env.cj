@@ -61,8 +61,11 @@ func genenvUnix(args: Array<String>, os: String) {
     let shell = args[1]
     match (shell) {
         case "bash" | "zsh" =>
+            // LD_LIBRARY_PATH 路径配置
+            let libPath = "\$CANGJIE_HOME/runtime/lib/${os}_\$(uname -m)_llvm:\$CANGJIE_HOME/runtime/lib/${os}_\$(uname -m)_cjnative:\$CANGJIE_HOME/lib/${os}_x86_64_jet:\$CANGJIE_HOME/tools/lib:\$CANGJIE_HOME/debugger/third_party/lldb/lib"
+
             let ldLibraryPathLine = if (appendLdLibraryPath) {
-                "export LD_LIBRARY_PATH=\$CJVS_MULTISHELL_PATH/runtime/lib/${os}_\$(uname -m)_llvm:\$CJVS_MULTISHELL_PATH/runtime/lib/${os}_\$(uname -m)_cjnative:\$CJVS_MULTISHELL_PATH/tools/lib:\$LD_LIBRARY_PATH"
+                "export LD_LIBRARY_PATH=${libPath}:\$LD_LIBRARY_PATH"
             } else {
                 ""
             }
@@ -83,7 +86,7 @@ ${stdxLine}
 
 # Function to quickly set LD_LIBRARY_PATH for Cangjie
 function cjenv() {
-    export LD_LIBRARY_PATH=\$CANGJIE_HOME/runtime/lib/${os}_\$(uname -m)_llvm:\$CANGJIE_HOME/runtime/lib/${os}_\$(uname -m)_cjnative:\$CANGJIE_HOME/lib/${os}_x86_64_jet:\$CANGJIE_HOME/debugger/third_party/lldb/lib:\$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=${libPath}:\$LD_LIBRARY_PATH
 }
 """)
         case "nushell" =>
@@ -121,8 +124,11 @@ ${stdxLine}
 }
 """)
         case "elvish" =>
+            // LD_LIBRARY_PATH 路径配置
+            let libPath = "\$E:CANGJIE_HOME\"/runtime/lib/${os}_\"(uname -m)\"_llvm\":\$E:CANGJIE_HOME\"/runtime/lib/${os}_\"(uname -m)\"_cjnative\":\$E:CANGJIE_HOME\"/lib/${os}_x86_64_jet\":\$E:CANGJIE_HOME\"/tools/lib\":\$E:CANGJIE_HOME\"/debugger/third_party/lldb/lib"
+
             let ldLibraryPathLine = if (appendLdLibraryPath) {
-                "set-env LD_LIBRARY_PATH \$E:CJVS_MULTISHELL_PATH\"/runtime/lib/${os}_\"(uname -m)\"_llvm\":\$E:CJVS_MULTISHELL_PATH\"/runtime/lib/${os}_\"(uname -m)\"_cjnative\":\$E:CJVS_MULTISHELL_PATH\"/tools/lib\":\$E:LD_LIBRARY_PATH"
+                "set-env LD_LIBRARY_PATH ${libPath}:\$E:LD_LIBRARY_PATH"
             } else {
                 ""
             }
@@ -143,7 +149,7 @@ ${stdxPathLine}
 
 # Function to quickly set LD_LIBRARY_PATH for Cangjie
 fn cjenv {
-    set-env LD_LIBRARY_PATH \$E:CANGJIE_HOME"/runtime/lib/${os}_"(uname -m)"_llvm":\$E:CANGJIE_HOME"/runtime/lib/${os}_"(uname -m)"_cjnative":\$E:CANGJIE_HOME"/lib/${os}_x86_64_jet":\$E:CANGJIE_HOME"/debugger/third_party/lldb/lib":\$E:LD_LIBRARY_PATH
+    set-env LD_LIBRARY_PATH ${libPath}:\$E:LD_LIBRARY_PATH
 }
 """)
         case _ => println("unsupport shell")
