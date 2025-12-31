@@ -67,6 +67,6 @@ func stdxSwitch(args: Array<String>) {
         config.save(getAppConfigFile())
 
         println("Default stdx version set to ${version} (${libType})")
-        println("Please restart your shell or run: eval \"\$(cjvs env bash -stdx)\"")
+        println("Please restart your shell or run: eval \"\$(cjvs stdx-env bash)\"")
     }
 }
