@@ -35,8 +35,7 @@ func stdxEnvUnix(args: Array<String>, os: String) {
 
     let libType = config.stdxType
     let version = config.stdxDefault ?? ""
-    let osName = if (os == "macos") { "macos" } else { "linux" }
-    let stdxPath = Path("${config.stdxDir}/${version}/${osName}_x86_64_llvm/${libType}/stdx").toString()
+    let stdxPath = getStdxPath(version, libType)
 
     match (shell) {
         case "bash" | "zsh" =>
@@ -77,7 +76,7 @@ public func stdxEnv(args: Array<String>) {
 
     let libType = config.stdxType
     let version = config.stdxDefault ?? ""
-    let stdxPath = Path("${config.stdxDir}\\${version}\\windows_x86_64_llvm\\${libType}\\stdx").toString()
+    let stdxPath = getStdxPath(version, libType)
 
     match (shell) {
         case "powershell" =>

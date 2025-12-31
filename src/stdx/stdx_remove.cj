@@ -1,7 +1,6 @@
 package cjvs.stdx
 
-import std.fs.{Path, exists}
-import std.process.executeWithOutput
+import std.fs.{Path, exists, removeIfExists}
 import cjvs.config.config
 import cjvs.tools.getAppConfigFile
 
@@ -22,31 +21,13 @@ func stdxRemove(args: Array<String>) {
 
     let versionPath = Path(config.stdxDir).join(version)
 
-    // 删除 dynamic 和 static 目录
-    let dynamicPath = versionPath.join("dynamic")
-    let staticPath = versionPath.join("static")
-
-    if (exists(dynamicPath)) {
-        // 递归删除
-        let (status, _, err) = executeWithOutput("rm", ["-rf", dynamicPath.toString()])
-        if (status != 0) {
-            println("Failed to remove dynamic: ${String.fromUtf8(err)}")
-            return
-        }
-    }
-
-    if (exists(staticPath)) {
-        let (status, _, err) = executeWithOutput("rm", ["-rf", staticPath.toString()])
-        if (status != 0) {
-            println("Failed to remove static: ${String.fromUtf8(err)}")
-            return
-        }
-    }
-
-    // 删除版本目录（如果为空）
-    let (status, _, _) = executeWithOutput("rmdir", ["--ignore-fail-on-non-empty", versionPath.toString()])
-    if (status == 0) {
+    // 直接删除整个版本目录
+    try {
+        _ = removeIfExists(versionPath, recursive: true)
         println("Removed stdx ${version}")
+    } catch (e: Exception) {
+        println("Failed to remove stdx ${version}: ${e}")
+        return
     }
 
     // 如果删除的是当前默认版本，清除默认设置

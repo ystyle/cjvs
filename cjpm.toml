@@ -25,6 +25,8 @@ cjpminfo = { git = "https://github.com/ystyle/cjpminfo.git", branch = "master", 
 
 [target.x86_64-unknown-linux-gnu.bin-dependencies]
   path-option = [ "${CANGJIE_STDX_PATH}" ]
+  # Temporarily disabled due to cjpm not supporting symlinks yet
+  # Uncomment after cjpm PR is merged
 
 
 [profile.build]

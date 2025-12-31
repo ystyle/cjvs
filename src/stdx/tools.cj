@@ -53,7 +53,19 @@ func getStdxVersions(): HashMap<String, ArrayList<StdxVersion>> {
 // 获取指定版本的 stdx 路径
 func getStdxPath(version: String, libType: String): String {
     let osName = if (CurrentOS == "macos") { "macos" } else { "linux" }
-    return Path(config.stdxDir).join(version).join("${osName}_x86_64_llvm").join(libType).join("stdx").toString()
+    let versionBasePath = Path(config.stdxDir).join(version)
+
+    // Try different runtime types: llvm (old) or cjnative (new)
+    let runtimeTypes = ["llvm", "cjnative"]
+    for (runtimeType in runtimeTypes) {
+        let testPath = versionBasePath.join("${osName}_x86_64_${runtimeType}").join(libType).join("stdx")
+        if (exists(testPath)) {
+            return testPath.toString()
+        }
+    }
+
+    // Fallback to llvm (for error messages)
+    return versionBasePath.join("${osName}_x86_64_llvm").join(libType).join("stdx").toString()
 }
 
 // 检查 stdx 版本是否已安装
