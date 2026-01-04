@@ -240,24 +240,6 @@ $ cjvs stdx remove 0.9.0
 
 #### 在环境中启用 stdx
 
-使用 `-stdx` 参数启用 stdx 环境变量：
-
-```shell
-# bash/zsh
-eval "$(cjvs env bash -stdx)"
-
-# nushell
-cjvs env nushell -stdx | save -f ~/.cjvs.nu
-use ~/.cjvs.nu
-
-# elvish
-eval (cjvs env elvish -stdx | slurp)
-```
-
-这会设置 `CANGJIE_STDX_PATH` 环境变量，指向当前选择的 stdx 版本和库类型（static/dynamic）。
-
-**注意**：`-stdx` 方式使用符号链接，当前版本的 cjpm 尚不支持读取符号链接，可能导致编译问题。建议使用下面的 `stdx-env` 命令。
-
 #### 使用 stdx-env 命令（推荐）
 
 `stdx-env` 命令专门用于设置 stdx 环境变量，直接使用实际路径，不依赖符号链接：
@@ -278,10 +260,33 @@ use ~/.cjvs-stdx.nu
 eval (cjvs stdx-env elvish | slurp)
 ```
 
+
+#### 使用 `-stdx` 参数
+
+使用 `-stdx` 参数启用 stdx 环境变量：
+
+```shell
+# bash/zsh
+eval "$(cjvs env bash -stdx)"
+
+# nushell
+cjvs env nushell -stdx | save -f ~/.cjvs.nu
+use ~/.cjvs.nu
+
+# elvish
+eval (cjvs env elvish -stdx | slurp)
+```
+
+这会设置 `CANGJIE_STDX_PATH` 环境变量，指向当前选择的 stdx 版本和库类型（static/dynamic）。
+
+**注意**：`-stdx` 方式使用符号链接，当前版本的 cjpm 尚不支持读取符号链接，可能导致编译问题。建议使用下面的 `stdx-env` 命令。（到时新版本修复可以使用这个）
+
+
 **两种方式的区别**：
 
-- **`cjvs env <shell> -stdx`**：使用符号链接，当前 cjpm 版本不支持，暂不推荐使用
 - **`cjvs stdx-env <shell>`**：直接使用实际路径，兼容所有版本的 cjpm，**推荐使用**
+- **`cjvs env <shell> -stdx`**：使用符号链接，当前 cjpm 版本不支持，暂不推荐使用
+
 
 ### env 命令参数
 
