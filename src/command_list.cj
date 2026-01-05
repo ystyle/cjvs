@@ -25,7 +25,7 @@ func listVersion(_: Array<String>) {
         sort<Path, String>(dirs, key: {p => p.fileName})
     }
 
-    println("Installed Cangjie versions(makr up * is in used):")
+    println("Installed Cangjie versions(mark up * is in used):")
     for (dir in dirs) {
         print("\t")
         if (let Some(p) <- used) {
