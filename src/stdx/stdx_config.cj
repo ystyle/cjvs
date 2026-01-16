@@ -23,7 +23,8 @@ func stdxConfig(args: Array<String>) {
     if (let Some(stdxLinkPath) <- getVariable("CANGJIE_STDX_PATH")) {
         // 需要重新链接符号链接
         if (let Some(v) <- config.stdxDefault) {
-            let newStdxRealPath = Path("${config.stdxDir}/${v}/${CurrentOS}_${arch}_llvm/${typeArg}/stdx")
+            // 使用 getStdxPath 支持新旧格式
+            let newStdxRealPath = Path(getStdxPath(v, typeArg))
 
             // 检查新路径是否存在
             if (!exists(newStdxRealPath)) {
@@ -63,7 +64,7 @@ func stdxConfig(args: Array<String>) {
         println("Default library type set to: ${typeArg}")
         if (let Some(v) <- config.stdxDefault) {
             println("Current stdx version: ${v}")
-            println("Please restart your shell or run: eval \"\$(cjvs env bash -stdx)\"")
+            println("Please restart your shell or run: eval \"\$(cjvs stdx-env bash)\"")
         } else {
             println("No default stdx version set")
         }

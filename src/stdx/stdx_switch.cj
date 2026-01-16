@@ -34,8 +34,8 @@ func stdxSwitch(args: Array<String>) {
 
     // 检查是否在多 shell 环境中
     if (let Some(stdxLinkPath) <- getVariable("CANGJIE_STDX_PATH")) {
-        // 计算新的 stdx 实际路径
-        let newStdxRealPath = Path("${config.stdxDir}/${version}/${CurrentOS}_${arch}_llvm/${libType}/stdx")
+        // 计算新的 stdx 实际路径（使用 getStdxPath 支持新旧格式）
+        let newStdxRealPath = Path(getStdxPath(version, libType))
 
         // 检查新路径是否存在
         if (!exists(newStdxRealPath)) {
