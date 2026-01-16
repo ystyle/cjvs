@@ -4,15 +4,15 @@ zip4cj = { path = "../zip4cj/", output-type = "static"}
 cjpminfo = { git = "https://github.com/ystyle/cjpminfo.git", branch = "master", output-type = "static"}
 
 [package]
+  name = "cjvs"
+  description = "仓颉编译器版本切换工具"
+  version = "0.3.5"
   cjc-version = "1.0.0"
   compile-option = ""
-  description = "仓颉编译器版本切换工具"
   link-option = ""
-  name = "cjvs"
   output-type = "executable"
   src-dir = "src"
   target-dir = ""
-  version = "0.3.4"
   package-configuration = {}
 
 [target.x86_64-unknown-windows-gnu] # wondows 系统的配置项
