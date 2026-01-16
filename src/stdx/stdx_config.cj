@@ -1,9 +1,8 @@
 package cjvs.stdx
 
-import std.env.getVariable
 import std.fs.{exists, removeIfExists, SymbolicLink, Path}
 import cjvs.config.config
-import cjvs.tools.{getAppConfigFile, CurrentOS, arch}
+import cjvs.tools.getAppConfigFile
 
 // 设置默认库类型
 func stdxConfig(args: Array<String>) {
@@ -20,7 +19,7 @@ func stdxConfig(args: Array<String>) {
     }
 
     // 检查是否在多 shell 环境中
-    if (let Some(stdxLinkPath) <- getVariable("CANGJIE_STDX_PATH")) {
+    if (let Some(stdxLinkPath) <- getStdxLinkPath()) {
         // 需要重新链接符号链接
         if (let Some(v) <- config.stdxDefault) {
             // 使用 getStdxPath 支持新旧格式

@@ -5,6 +5,7 @@ import std.fs.{Directory, Path, SymbolicLink, exists}
 import std.time.DateTime
 import cjvs.config.config
 import cjvs.tools.ContainsArray
+import cjvs.stdx.{getStdxPath}
 
 @When[os == "Linux"]
 func genenv(args: Array<String>) {
@@ -44,12 +45,8 @@ func genenvUnix(args: Array<String>, os: String) {
     var stdxPath = ""
     if (enableStdx && let Some(v) <- config.stdxDefault) {
         let libType = config.stdxType
-        let osName = if (os == "macos") {
-            "macos"
-        } else {
-            "linux"
-        }
-        let stdxRealPath = Path("${config.stdxDir}/${v}/${osName}_x86_64_llvm/${libType}/stdx")
+        // 使用 getStdxPath 支持新旧两种目录结构（llvm/cjnative）
+        let stdxRealPath = Path(getStdxPath(v, libType))
         let stdxLinkPath = Path("/tmp/cjvs_multishells/stdx_${pid}_${unix}")
 
         // 创建符号链接，target 指向实际的 stdx 目录
