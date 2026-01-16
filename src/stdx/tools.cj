@@ -2,6 +2,7 @@ package cjvs.stdx
 
 import std.fs.{Path, exists}
 import std.collection.{ArrayList, HashMap}
+import std.env.getVariable
 import cjvs.config.config
 import cjvs.model.StdxVersion
 import cjvs.tools.{getHttpClient, CurrentOS, arch}
@@ -51,7 +52,7 @@ func getStdxVersions(): HashMap<String, ArrayList<StdxVersion>> {
 }
 
 // 获取指定版本的 stdx 路径
-func getStdxPath(version: String, libType: String): String {
+public func getStdxPath(version: String, libType: String): String {
     let osName = if (CurrentOS == "macos") { "macos" } else { "linux" }
     let versionBasePath = Path(config.stdxDir).join(version)
 
@@ -73,4 +74,17 @@ func isStdxInstalled(version: String): Bool {
     let dynamicPath = getStdxPath(version, "dynamic")
     let staticPath = getStdxPath(version, "static")
     return exists(Path(dynamicPath)) || exists(Path(staticPath))
+}
+
+// 获取多 shell 环境下的 stdx 符号链接路径
+// 返回格式: /tmp/cjvs_multishells/stdx_${pid}_${unix}
+public func getStdxLinkPath(): ?String {
+    if (let Some(multishellPath) <- getVariable("CJVS_MULTISHELL_PATH")) {
+        let pathParts = multishellPath.split("/")
+        if (pathParts.size > 0) {
+            let pidUnix = pathParts[pathParts.size - 1]
+            return Some("/tmp/cjvs_multishells/stdx_${pidUnix}")
+        }
+    }
+    return None
 }

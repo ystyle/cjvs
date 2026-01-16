@@ -1,6 +1,6 @@
 package cjvs.stdx
 
-import std.fs.{Path, exists}
+import std.fs.{Path, exists, canonicalize}
 import std.sort.sort
 import std.collection.ArrayList
 import cjvs.tools.listdir
@@ -37,8 +37,36 @@ func stdxList(_: Array<String>) {
 
     println("Installed stdx versions (* = current):")
 
-    // 获取当前版本
-    var currentVersion: ?String = config.stdxDefault
+    // 获取当前版本：优先从符号链接读取（多 shell 环境），否则从配置读取
+    var currentVersion: ?String = None
+    if (let Some(stdxLinkPath) <- getStdxLinkPath()) {
+        // 在多 shell 环境中，从符号链接实际指向读取版本
+        if (exists(Path(stdxLinkPath))) {
+            try {
+                // 读取符号链接指向的实际路径
+                // 格式: <config.stdxDir>/<version>/<platform>/<libType>/stdx
+                let realPath = canonicalize(Path(stdxLinkPath)).toString()
+                // 去掉 stdxDir 前缀，获取相对路径
+                let relativePath = if (realPath.size > config.stdxDir.size && realPath.size > config.stdxDir.size + 1) {
+                    realPath[config.stdxDir.size + 1..]
+                } else {
+                    ""
+                }
+                // 提取版本号（相对路径的第一部分）
+                if (relativePath.size > 0) {
+                    let version = relativePath.split("/")[0]
+                    currentVersion = Some(version)
+                }
+            } catch (e: Exception) {
+                // 如果读取符号链接失败，使用配置文件
+                currentVersion = config.stdxDefault
+            }
+        } else {
+            currentVersion = config.stdxDefault
+        }
+    } else {
+        currentVersion = config.stdxDefault
+    }
 
     for (versionPath in versions) {
         let version = versionPath.fileName.toString()

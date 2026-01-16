@@ -1,9 +1,8 @@
 package cjvs.stdx
 
-import std.env.getVariable
 import std.fs.{exists, removeIfExists, SymbolicLink, Path}
 import cjvs.config.config
-import cjvs.tools.{getAppConfigFile, CurrentOS, arch}
+import cjvs.tools.getAppConfigFile
 
 // 切换 stdx 版本
 func stdxSwitch(args: Array<String>) {
@@ -33,7 +32,8 @@ func stdxSwitch(args: Array<String>) {
     }
 
     // 检查是否在多 shell 环境中
-    if (let Some(stdxLinkPath) <- getVariable("CANGJIE_STDX_PATH")) {
+    if (let Some(stdxLinkPath) <- getStdxLinkPath()) {
+        // 在多 shell 环境中，重新链接符号链接
         // 计算新的 stdx 实际路径（使用 getStdxPath 支持新旧格式）
         let newStdxRealPath = Path(getStdxPath(version, libType))
 
