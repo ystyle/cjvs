@@ -1,5 +1,5 @@
 ### cjvs
-仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台. linux解压依赖tar和unzip
+仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台。linux 解压 tar.gz 格式依赖系统 tar 命令
 
 更新日志:
 > - 2025-12-30 v0.3.0 升级到 Cangjie 1.0.0，新增 stdx 管理功能，支持静态/动态库切换，支持 macOS 平台
@@ -7,30 +7,6 @@
 > - 2025-07-04 因为添加了不同的shell进程，可切换不同版本的功能，当前widnows 版本暂时不可用
 > - 2025-03-30 初步支持了windows(powershell), 可以自己手工编译试用
 
-
-已知问题:
-- **zip4cj CANGJIE_STDX_PATH 格式不兼容**：
-  - zip4cj 使用旧格式：`CANGJIE_STDX_PATH=/target` + `path-option = ["${CANGJIE_STDX_PATH}/linux_x86_64_llvm/dynamic/stdx"]`
-  - 新格式为：`CANGJIE_STDX_PATH=/target/linux_x86_64_llvm/dynamic/stdx` + `path-option = ["${CANGJIE_STDX_PATH}"]`
-  - **问题**：两种格式的 CANGJIE_STDX_PATH 值不同，无法同时满足。如果使用旧格式会导致所有依赖都链接到动态库（.so）
-  - **解决方案**：必须使用本地 path 依赖并手动修改 zip4cj：
-    ```bash
-    # 1. Clone zip4cj 到本地
-    cd ~/Code/Cangjie
-    git clone https://gitcode.com/Cangjie-TPC/zip4cj.git
-
-    # 2. 修改 zip4cj/cjpm.toml
-    [package]
-      output-type = "static"  # 改为静态库
-
-    [target.x86_64-unknown-linux-gnu.bin-dependencies]
-      path-option = [ "${CANGJIE_STDX_PATH}" ]  # 使用新格式
-
-    # 3. cjpm.toml 中使用本地依赖
-    [dependencies]
-    zip4cj = { path = "../zip4cj/", output-type = "static"}
-    ```
-- 0.1.1 版本， 如果切换到0.59及以下版本需要设置`export CANGJIE_HOME=$CJVS_MULTISHELL_PATH`, 因为std外的包(如net/encoding待是从CANGJIE_HOME环境变量导入的)
 
 ### 功能
 - 列出可在线安装的官方发布版本
@@ -43,11 +19,11 @@
 - **管理 stdx 扩展库**：安装、切换、删除 stdx 版本，支持静态/动态库切换
 
 ### 安装
-- 先克隆仓库: `git clone https://github.com/ystyle/cjvs`  
-- 需要安装stdx, 然后设置环境变量: `export CANGJIE_STDX_PATH=path_to_stdx/1.0.0/`
-- 使用1.0.0版本的仓颉编译: `cjpm build`
-- 如果使用`Archlinux`可以使用`paru -S cjvs-bin`安装
-  >本仓库Release里的linux-amd64版本是在archlinux构建的，在较老的linux发行版可能不支持。
+- 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
+- 需要安装 1.1.0+ 版本的 stdx，然后设置环境变量: `export CANGJIE_STDX_PATH=path_to_stdx/1.1.0/`
+- 使用 1.1.0+ 版本的仓颉编译: `cjpm build`
+- 如果使用 `Archlinux` 可以使用 `paru -S cjvs-bin` 安装
+  >本仓库 Release 里的 linux-amd64 版本是在 archlinux 构建的，在较老的 linux 发行版可能不支持。
 
 ### 设置
 
@@ -260,8 +236,10 @@ use ~/.cjvs-stdx.nu
 eval (cjvs stdx-env elvish | slurp)
 ```
 
+<details>
+<summary>使用 `-stdx` 参数（当前不可用，点击展开）</summary>
 
-#### 使用 `-stdx` 参数
+> ⚠️ **注意**：由于 cjpm 当前版本不支持读取符号链接，此方式暂不可用。官方已将其作为需求处理，等待修复后可启用。
 
 使用 `-stdx` 参数启用 stdx 环境变量：
 
@@ -279,14 +257,12 @@ eval (cjvs env elvish -stdx | slurp)
 
 这会设置 `CANGJIE_STDX_PATH` 环境变量，指向当前选择的 stdx 版本和库类型（static/dynamic）。
 
-**注意**：`-stdx` 方式使用符号链接，当前版本的 cjpm 尚不支持读取符号链接，可能导致编译问题。建议使用下面的 `stdx-env` 命令。（到时新版本修复可以使用这个）
-
-
 **两种方式的区别**：
 
 - **`cjvs stdx-env <shell>`**：直接使用实际路径，兼容所有版本的 cjpm，**推荐使用**
-- **`cjvs env <shell> -stdx`**：使用符号链接，当前 cjpm 版本不支持，暂不推荐使用
+- **`cjvs env <shell> -stdx`**：使用符号链接，当前 cjpm 版本不支持，暂不可用
 
+</details>
 
 ### env 命令参数
 
@@ -296,24 +272,17 @@ eval (cjvs env elvish -stdx | slurp)
 cjvs env <shell> [options]
 
 选项:
-  -stdx              启用 stdx 环境变量（CANGJIE_STDX_PATH）
   -no-ld-library-path 不设置 LD_LIBRARY_PATH 环境变量
 ```
 
 #### 使用示例
 
 ```shell
-# 基础用法（不启用 stdx）
+# 基础用法
 eval "$(cjvs env bash)"
-
-# 启用 stdx
-eval "$(cjvs env bash -stdx)"
 
 # 不设置 LD_LIBRARY_PATH（某些情况下可能需要）
 eval "$(cjvs env bash -no-ld-library-path)"
-
-# 同时启用 stdx 且不设置 LD_LIBRARY_PATH
-eval "$(cjvs env bash -stdx -no-ld-library-path)"
 ```
 
 #### cjenv 快捷函数

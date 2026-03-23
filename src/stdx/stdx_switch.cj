@@ -31,19 +31,20 @@ func stdxSwitch(args: Array<String>) {
         }
     }
 
-    // 检查是否在多 shell 环境中
+    // 始终更新配置文件
+    config.stdxDefault = Some(version)
+    config.stdxType = libType
+    config.save(getAppConfigFile())
+
+    // 如果在多 shell 环境中，也更新符号链接
     if (let Some(stdxLinkPath) <- getStdxLinkPath()) {
-        // 在多 shell 环境中，重新链接符号链接
-        // 计算新的 stdx 实际路径（使用 getStdxPath 支持新旧格式）
         let newStdxRealPath = Path(getStdxPath(version, libType))
 
-        // 检查新路径是否存在
         if (!exists(newStdxRealPath)) {
             println("Error: stdx path not found: ${newStdxRealPath}")
             return
         }
 
-        // 重新链接符号链接
         try {
             removeIfExists(stdxLinkPath, recursive: true)
         } catch (e: Exception) {
@@ -61,11 +62,6 @@ func stdxSwitch(args: Array<String>) {
         println("Switch success")
         println("Now using stdx version: ${version} (${libType})")
     } else {
-        // 不在多 shell 环境中，只更新配置
-        config.stdxDefault = Some(version)
-        config.stdxType = libType
-        config.save(getAppConfigFile())
-
         println("Default stdx version set to ${version} (${libType})")
         println("Please restart your shell or run: eval \"\$(cjvs stdx-env bash)\"")
     }

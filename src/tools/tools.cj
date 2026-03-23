@@ -6,8 +6,9 @@ import std.process.{executeWithOutput}
 import std.env.{getVariable, getCommand}
 import stdx.encoding.json.stream.*
 import stdx.net.http.{ClientBuilder}
-import stdx.net.tls.{TlsClientConfig, CertificateVerifyMode}
-import zip4cj.*
+import stdx.net.tls.*
+import stdx.net.tls.common.*
+import ystyle::zip.*
 import cjvs.model.Version
 import cjvs.config.config
 
@@ -97,10 +98,9 @@ public func getHttpClient() {
 public func uncompress(ext: String, source: String, target: String) {
     match (ext) {
         case "zip" =>
-            let zipFile = ZipFile(source) // 创建ZipFile类
-            zipFile.setRunInThread(false) // 设置是否用子线程运行任务
-            zipFile.extractAll(target) // 解压到 output 文件夹, 文件夹不存在则创建
-            zipFile.close() // 资源关闭
+            let reader = Reader.open(source)
+            reader.extractAll(target)
+            reader.close()
             ()
         case _ => println("unsupport file format")
     }
@@ -110,11 +110,9 @@ public func uncompress(ext: String, source: String, target: String) {
 public func uncompress(ext: String, source: String, target: String) {
     match (ext) {
         case "zip" =>
-            // 使用 zip4cj 库解压 zip
-            let zipFile = ZipFile(source)
-            zipFile.setRunInThread(false)
-            zipFile.extractAll(target)
-            zipFile.close()
+            let reader = Reader.open(source)
+            reader.extractAll(target)
+            reader.close()
             ()
         case "tar.gz" =>
             // tar.gz 格式使用系统命令
