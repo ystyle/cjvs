@@ -1,14 +1,13 @@
 [dependencies]
-# zip4cj = {git = "https://gitcode.com/Cangjie-TPC/zip4cj", branch = "cjc_1.0.4", output-type = "static"}
-zip4cj = { path = "../zip4cj/", output-type = "static"}
-cjpminfo = { git = "https://github.com/ystyle/cjpminfo.git", branch = "master", output-type = "static"}
+"ystyle::zip" = "1.0.1"
+"cjpminfo" = "1.2.0"
 
 [package]
   name = "cjvs"
   description = "仓颉编译器版本切换工具"
-  version = "0.3.5"
-  cjc-version = "1.0.0"
-  compile-option = ""
+  version = "0.3.6"
+  cjc-version = "1.1.0"
+  compile-option = "-Woff unused"
   link-option = ""
   output-type = "executable"
   src-dir = "src"
