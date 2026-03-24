@@ -11,3 +11,4 @@ target
 *.cj.macrocall
 *.zip
 scripts
+log.txt
