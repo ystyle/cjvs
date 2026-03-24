@@ -5,7 +5,7 @@ import cjvs.tools.getVersions
 
 // 在控制台列出所有的可用版本
 func remote(args: Array<String>) {
-    var showChannel = if (args.size >= 2 && ["beta", "lts"].contains(args[1])) {
+    var showChannel = if (args.size >= 2 && ["sts", "lts"].contains(args[1])) {
         args[1]
     } else {
         "all"
