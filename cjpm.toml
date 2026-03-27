@@ -12,6 +12,10 @@
   output-type = "executable"
   src-dir = "src"
   target-dir = ""
+  include =["src"]
+  license = ["MIT"]
+  authors = ["ystyle"]
+  repository = "https://atomgit.com/OpenCangjieCommunity/cjvs"
   package-configuration = {}
 
 [target.x86_64-unknown-windows-gnu] # wondows 系统的配置项
@@ -22,9 +26,21 @@
 [target.x86_64-unknown-linux-gnu.release]
   compile-option = "-O2"
 
-[target.x86_64-unknown-linux-gnu.bin-dependencies]
-  path-option = [ "${CANGJIE_STDX_PATH}" ]
+[target.aarch64-unknown-linux-gnu] # linux 系统的配置项
+  compile-option = "--static "
+[target.aarch64-unknown-linux-gnu.release]
+  compile-option = "-O2"
 
+[target.x86_64-unknown-linux-gnu.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
+[target.aarch64-unknown-linux-gnu.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
+[target.x86_64-apple-darwin.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
+[target.aarch64-apple-darwin.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
+[target.x86_64-w64-mingw32.bin-dependencies]
+  path-option = ["${CANGJIE_STDX_PATH}"]
 
 [profile.build]
 incremental = true

@@ -2,6 +2,7 @@
 仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台。linux 解压 tar.gz 格式依赖系统 tar 命令
 
 更新日志:
+> - 2026-03-24 v0.3.6 升级到 Cagnjie 1.1.0, 现在可以直接使用`cjpm install cjvs-0.3.6` 来下载
 > - 2025-12-30 v0.3.0 升级到 Cangjie 1.0.0，新增 stdx 管理功能，支持静态/动态库切换，支持 macOS 平台
 > - 2025-08-24 windows 也能使用了， 并新增了`elvish`和`nushell`的支持
 > - 2025-07-04 因为添加了不同的shell进程，可切换不同版本的功能，当前widnows 版本暂时不可用
@@ -19,11 +20,12 @@
 - **管理 stdx 扩展库**：安装、切换、删除 stdx 版本，支持静态/动态库切换
 
 ### 安装
-- 先克隆仓库: `git clone https://github.com/ystyle/cjvs`
-- 需要安装 1.1.0+ 版本的 stdx，然后设置环境变量: `export CANGJIE_STDX_PATH=path_to_stdx/1.1.0/`
-- 使用 1.1.0+ 版本的仓颉编译: `cjpm build`
-- 如果使用 `Archlinux` 可以使用 `paru -S cjvs-bin` 安装
+1. Archlinux
+  - 如果使用 `Archlinux` 可以使用 `paru -S cjvs-bin` 安装
   >本仓库 Release 里的 linux-amd64 版本是在 archlinux 构建的，在较老的 linux 发行版可能不支持。
+2. Widnows, Linux, MacOS 使用cjpm安装
+  - 需要安装 1.1.0+ 版本的 `cangjie编译器` 和 `stdx`，然后设置环境变量: `export CANGJIE_STDX_PATH=path_to_stdx/1.1.0/`
+  - 执行`cjpm install cjvs-0.3.6`
 
 ### 设置
 
@@ -295,3 +297,6 @@ cjenv
 ```
 
 这会更新 `LD_LIBRARY_PATH` 指向当前 `$CANGJIE_HOME` 的运行时库路径。
+
+### 许可证
+[MIT License](LICENSE)
