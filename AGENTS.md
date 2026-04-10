@@ -279,6 +279,10 @@ cjvs/
 │   │   └── model.cj       # 数据模型定义
 │   ├── config/
 │   │   └── config.cj      # 全局配置
+│   ├── env/               # env 子包：环境变量生成
+│   │   ├── command.cj     # 命令入口和符号链接管理
+│   │   ├── render.cj      # Shell 渲染方法（bash/zsh/fish/nushell/elvish/powershell）
+│   │   └── paths.cj       # 路径生成（条件编译处理平台差异）
 │   ├── stdx/              # stdx 子命令实现
 │   │   ├── command.cj     # 命令分发
 │   │   ├── stdx_install.cj
@@ -290,9 +294,34 @@ cjvs/
 └── target/                # 构建输出
 ```
 
+## env 模块架构
+
+env 模块负责生成不同 shell 的环境变量设置脚本，采用 match + 方法模式：
+
+```cangjie
+// render.cj - 主渲染函数通过 match 分发
+public func renderEnvScript(shell: String, ...): String {
+    match (shell) {
+        case "bash" | "zsh" => renderBashZsh(...)
+        case "fish" => renderFish(...)
+        case "nushell" => renderNushell(...)
+        case "elvish" => renderElvish(...)
+        case "powershell" => renderPowershell(...)
+        case _ => "unsupport shell"
+    }
+}
+
+// paths.cj - 条件编译处理平台差异
+@When[os == "Linux" || os == "macOS"]
+public func runtimeLibPaths(home: Path): ArrayList<Path> { ... }
+
+@When[os == "Windows"]
+public func runtimeLibPaths(home: Path): ArrayList<Path> { ... }
+```
+
 ## 依赖说明
 
-- `zip4cj`: ZIP 文件处理库
+- `ystyle::zip`: ZIP 文件处理库（中央库）
 - `cjpminfo`: 包信息获取
 - 标准库: `std.fs`, `std.env`, `std.collection`, `std.process`
 - 扩展库: `stdx.encoding.json`, `stdx.net.http`

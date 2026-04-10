@@ -2,6 +2,7 @@ package cjvs.stdx
 
 import std.fs.Path
 import cjvs.config.config
+import cjvs.env.renderStdxEnv
 
 @When[os == "Linux"]
 public func stdxEnv(args: Array<String>) {
@@ -14,14 +15,11 @@ public func stdxEnv(args: Array<String>) {
 }
 
 func stdxEnvUnix(args: Array<String>, os: String) {
-    // 支持两种调用方式：
-    // 1. cjvs stdx-env zsh -> args = ["stdx-env", "zsh"] -> shell = args[1]
-    // 2. cjvs stdx env zsh -> args = ["stdx", "env", "zsh"] -> shell = args[2]
     if (args.size < 2 || (args[0] != "stdx-env" && args.size < 3)) {
         println("Usage: cjvs stdx-env <shell>")
         println("       cjvs stdx env <shell>")
         println("")
-        println("Available shells: bash, zsh, nushell, elvish")
+        println("Available shells: bash, zsh, fish, nushell, elvish")
         return
     }
 
@@ -37,32 +35,16 @@ func stdxEnvUnix(args: Array<String>, os: String) {
     let version = config.stdxDefault ?? ""
     let stdxPath = getStdxPath(version, libType)
 
-    match (shell) {
-        case "bash" | "zsh" =>
-            println("export CANGJIE_STDX_PATH=\"${stdxPath}\"")
-        case "nushell" =>
-            println(
-                """
-export-env {
-    \$env.CANGJIE_STDX_PATH = '${stdxPath}'
-}
-""")
-        case "elvish" =>
-            println("set-env CANGJIE_STDX_PATH \"${stdxPath}\"")
-        case _ => println("unsupport shell: ${shell}")
-    }
+    println(renderStdxEnv(shell, stdxPath))
 }
 
 @When[os == "Windows"]
 public func stdxEnv(args: Array<String>) {
-    // 支持两种调用方式：
-    // 1. cjvs stdx-env zsh -> args = ["stdx-env", "zsh"] -> shell = args[1]
-    // 2. cjvs stdx env zsh -> args = ["stdx", "env", "zsh"] -> shell = args[2]
     if (args.size < 2 || (args[0] != "stdx-env" && args.size < 3)) {
         println("Usage: cjvs stdx-env <shell>")
         println("       cjvs stdx env <shell>")
         println("")
-        println("Available shells: powershell, nushell, elvish")
+        println("Available shells: powershell, nushell, fish, elvish")
         return
     }
 
@@ -78,18 +60,5 @@ public func stdxEnv(args: Array<String>) {
     let version = config.stdxDefault ?? ""
     let stdxPath = getStdxPath(version, libType)
 
-    match (shell) {
-        case "powershell" =>
-            println("\$env:CANGJIE_STDX_PATH = \"${stdxPath}\"")
-        case "nushell" =>
-            println(
-                """
-export-env {
-    \$env.CANGJIE_STDX_PATH = '${stdxPath}'
-}
-""")
-        case "elvish" =>
-            println("set-env CANGJIE_STDX_PATH \"${stdxPath}\"")
-        case _ => println("unsupport shell: ${shell}")
-    }
+    println(renderStdxEnv(shell, stdxPath))
 }

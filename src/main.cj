@@ -6,6 +6,7 @@ import std.fs.{Directory, File, exists, OpenMode}
 import cjvs.stdx.{handleCommand, stdxEnv}
 import cjvs.model.Config
 import cjvs.config.{config, CJVS_MULTISHELL_PATH}
+import cjvs.env.genenv
 import cjvs.tools.{getAppConfigDir, getAppConfigFile, CurrentOS, ContainsArray}
 import cjpminfo.*
 
