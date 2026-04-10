@@ -18,6 +18,7 @@
 - 设置默认的仓颉版本
 - 删除cjvs安装的版本
 - **管理 stdx 扩展库**：安装、切换、删除 stdx 版本，支持静态/动态库切换
+- **多 Shell 支持**：bash、zsh、fish、nushell、elvish、powershell
 
 ### 安装
 1. Archlinux
@@ -50,6 +51,9 @@
   cjvs env nushell | save -f ~/.cjvs.nu
   use ~/.cjvs.nu
  
+  # fish
+  cjvs env fish | source
+  
   # elvish 
   eval (cjvs.exe env elvish | slurp)
   ```
@@ -233,6 +237,9 @@ eval "$(cjvs stdx env zsh)"
 # nushell
 cjvs stdx-env nushell | save -f ~/.cjvs-stdx.nu
 use ~/.cjvs-stdx.nu
+
+# fish
+cjvs stdx-env fish | source
 
 # elvish
 eval (cjvs stdx-env elvish | slurp)

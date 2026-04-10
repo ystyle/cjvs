@@ -1,5 +1,5 @@
 version = 0
 
 [requires]
-  cjpminfo = {git = "https://github.com/ystyle/cjpminfo.git", commitId = "a228b0b547e93a9e46d500c7cb2b8a0b17dc57e8", branch = "master", output-type = "static"}
-  "ystyle::zip" = {version = "1.0.1"}
+  cjpminfo = {version = "1.2.0"}
+  "ystyle::zip" = {version = "1.0.5"}
