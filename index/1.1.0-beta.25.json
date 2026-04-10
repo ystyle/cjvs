@@ -1,0 +1,47 @@
+[
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-1.1.0-beta.25.zip&objectKey=69cb95dc6e8ed61e6e07fd46",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.1.0-beta.25",
+    "os": "windows",
+    "arch": "x86_64",
+    "sha256sum": "efc26783dca45f22b923f63cc0b602f981269ae0c60beb139cc22dec05e7755a"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-1.1.0-beta.25.tar.gz&objectKey=69cb73ec6e8ed61e6e07fd43",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.0-beta.25",
+    "os": "darwin",
+    "arch": "aarch64",
+    "sha256sum": "f1c7cc585a9424df08c2ad800b4755defc1b598e4a7d4017aa8a80fe9ba61324"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-x64-1.1.0-beta.25.tar.gz&objectKey=69cb71666e8ed61e6e07fd41",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.0-beta.25",
+    "os": "darwin",
+    "arch": "x86_64",
+    "sha256sum": "b0b3a8208f883a62ce36e51ce9e3b30c303a5809bd1bef6c4d9381f5da5a3a8b"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-aarch64-1.1.0-beta.25.tar.gz&objectKey=69cb74a76e8ed61e6e07fd45",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.0-beta.25",
+    "os": "linux",
+    "arch": "aarch64",
+    "sha256sum": "736b104fa35249fdb913786454db0cef2c13418452eba901a12a0214c2f227f9"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-1.1.0-beta.25.tar.gz&objectKey=69cb718e6e8ed61e6e07fd42",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.0-beta.25",
+    "os": "linux",
+    "arch": "x86_64",
+    "sha256sum": "425390c4543ea2cd9e6c3a192f20ff34212b4328b4d2b5ca556f6953cb6acd13"
+  }
+]
