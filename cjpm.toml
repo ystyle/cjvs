@@ -5,7 +5,7 @@
 [package]
   name = "cjvs"
   description = "仓颉编译器版本切换工具"
-  version = "0.3.7"
+  version = "0.3.8"
   cjc-version = "1.1.0"
   compile-option = "--static -Woff driver-arg -Woff unused"
   link-option = ""

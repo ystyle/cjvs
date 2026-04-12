@@ -59,14 +59,14 @@ public func getStdxPath(version: String, libType: String): String {
     // Try different runtime types: llvm (old) or cjnative (new)
     let runtimeTypes = ["llvm", "cjnative"]
     for (runtimeType in runtimeTypes) {
-        let testPath = versionBasePath.join("${osName}_x86_64_${runtimeType}").join(libType).join("stdx")
+        let testPath = versionBasePath.join("${osName}_${arch}_${runtimeType}").join(libType).join("stdx")
         if (exists(testPath)) {
             return testPath.toString()
         }
     }
 
     // Fallback to llvm (for error messages)
-    return versionBasePath.join("${osName}_x86_64_llvm").join(libType).join("stdx").toString()
+    return versionBasePath.join("${osName}_${arch}_llvm").join(libType).join("stdx").toString()
 }
 
 // 检查 stdx 版本是否已安装
