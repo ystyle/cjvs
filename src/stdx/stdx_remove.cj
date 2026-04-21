@@ -1,7 +1,7 @@
 package cjvs.stdx
 
 import std.fs.{Path, exists, removeIfExists}
-import cjvs.config.config
+import cjvs.config.defaultConfig
 import cjvs.tools.getAppConfigFile
 
 // 删除 stdx 版本
@@ -19,7 +19,7 @@ func stdxRemove(args: Array<String>) {
         return
     }
 
-    let versionPath = Path(config.stdxDir).join(version)
+    let versionPath = Path(defaultConfig.stdxDir).join(version)
 
     // 直接删除整个版本目录
     try {
@@ -31,8 +31,8 @@ func stdxRemove(args: Array<String>) {
     }
 
     // 如果删除的是当前默认版本，清除默认设置
-    if (let Some(v) <- config.stdxDefault && v == version) {
-        config.stdxDefault = None
-        config.save(getAppConfigFile())
+    if (let Some(v) <- defaultConfig.stdxDefault && v == version) {
+        defaultConfig.stdxDefault = None
+        defaultConfig.save(getAppConfigFile())
     }
 }

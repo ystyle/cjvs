@@ -2,7 +2,7 @@ package cjvs
 
 import std.fs.{exists, removeIfExists, SymbolicLink, Path}
 import std.env.getVariable
-import cjvs.config.{config}
+import cjvs.config.defaultConfig
 
 // 切换版本
 func switchVersion(args: Array<String>) {
@@ -11,7 +11,7 @@ func switchVersion(args: Array<String>) {
         return
     }
     let version = args[1]
-    let versiondir = Path(config.storeDir).join(version)
+    let versiondir = Path(defaultConfig.storeDir).join(version)
     if (!exists(versiondir)) {
         println("${version} is not found.")
         return

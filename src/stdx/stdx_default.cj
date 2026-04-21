@@ -1,6 +1,6 @@
 package cjvs.stdx
 
-import cjvs.config.config
+import cjvs.config.defaultConfig
 import cjvs.tools.getAppConfigFile
 
 // 设置默认 stdx 版本
@@ -30,9 +30,9 @@ func stdxDefault(args: Array<String>) {
         }
     }
 
-    config.stdxDefault = Some(version)
-    config.stdxType = libType
-    config.save(getAppConfigFile())
+    defaultConfig.stdxDefault = Some(version)
+    defaultConfig.stdxType = libType
+    defaultConfig.save(getAppConfigFile())
 
     println("Default stdx version set to ${version} (${libType})")
 }

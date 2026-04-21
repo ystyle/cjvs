@@ -115,10 +115,10 @@ GLOBAL OPTIONS:
 ```
 
 示例
-- 显示可用公测版本
+- 显示可用STS版本
   ```shell
   $ cjvs rls            
-  Channel: beta
+  Channel: sts
         0.53.13
         0.53.18
   ```

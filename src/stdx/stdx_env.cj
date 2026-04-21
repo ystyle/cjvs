@@ -1,20 +1,20 @@
 package cjvs.stdx
 
-import std.fs.Path
-import cjvs.config.config
+import cjvs.config.defaultConfig
+import cjvs.tools.getStdxPath
 import cjvs.env.renderStdxEnv
 
 @When[os == "Linux"]
-public func stdxEnv(args: Array<String>) {
-    stdxEnvUnix(args, "linux")
+public func stdxEnv(args: Array<String>): Unit {
+    stdxEnvUnix(args)
 }
 
 @When[os == "macOS"]
-public func stdxEnv(args: Array<String>) {
-    stdxEnvUnix(args, "macos")
+public func stdxEnv(args: Array<String>): Unit {
+    stdxEnvUnix(args)
 }
 
-func stdxEnvUnix(args: Array<String>, os: String) {
+func stdxEnvUnix(args: Array<String>): Unit {
     if (args.size < 2 || (args[0] != "stdx-env" && args.size < 3)) {
         println("Usage: cjvs stdx-env <shell>")
         println("       cjvs stdx env <shell>")
@@ -25,21 +25,21 @@ func stdxEnvUnix(args: Array<String>, os: String) {
 
     let shell = if (args[0] == "stdx-env") { args[1] } else { args[2] }
 
-    if (let None <- config.stdxDefault) {
+    if (let None <- defaultConfig.stdxDefault) {
         println("Error: No default stdx version set.")
         println("Use 'cjvs stdx default <version>' to set a default version.")
         return
     }
 
-    let libType = config.stdxType
-    let version = config.stdxDefault ?? ""
+    let libType = defaultConfig.stdxType
+    let version = defaultConfig.stdxDefault ?? ""
     let stdxPath = getStdxPath(version, libType)
 
     println(renderStdxEnv(shell, stdxPath))
 }
 
 @When[os == "Windows"]
-public func stdxEnv(args: Array<String>) {
+public func stdxEnv(args: Array<String>): Unit {
     if (args.size < 2 || (args[0] != "stdx-env" && args.size < 3)) {
         println("Usage: cjvs stdx-env <shell>")
         println("       cjvs stdx env <shell>")

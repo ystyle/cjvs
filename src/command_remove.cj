@@ -1,7 +1,7 @@
 package cjvs
 import std.fs.{Path, exists, removeIfExists, FileInfo, SymbolicLink}
 import std.env.getVariable
-import cjvs.config.config
+import cjvs.config.defaultConfig
 
 // 删除已安装版本
 func removeVersion(args: Array<String>) {
@@ -10,7 +10,7 @@ func removeVersion(args: Array<String>) {
         return
     }
     let version = args[1]
-    let versiondir = Path(config.storeDir).join(version)
+    let versiondir = Path(defaultConfig.storeDir).join(version)
     if (!exists(versiondir)) {
         println("${version} is not found.")
         return

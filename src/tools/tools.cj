@@ -1,27 +1,27 @@
 package cjvs.tools
 
-import std.fs.{Path, Directory}
+import std.fs.{Path, Directory, exists}
 import std.collection.{ArrayList, HashMap}
 import std.process.{executeWithOutput}
 import std.env.{getVariable, getCommand}
 import stdx.encoding.json.stream.*
-import stdx.net.http.{ClientBuilder}
+import stdx.net.http.{ClientBuilder, Client}
 import stdx.net.tls.*
 import stdx.net.tls.common.*
 import ystyle::zip.*
 import cjvs.model.Version
-import cjvs.config.config
+import cjvs.config.defaultConfig
 
 @When[arch == "aarch64"]
-public var arch = "aarch64"
+public var arch: String = "aarch64"
 @When[arch == "x86_64"]
-public var arch = "x86_64"
+public var arch: String = "x86_64"
 @When[os == "Linux"]
-public var CurrentOS = "linux"
+public var CurrentOS: String = "linux"
 @When[os == "Windows"]
-public var CurrentOS = "windows"
+public var CurrentOS: String = "windows"
 @When[os == "macOS"]
-public var CurrentOS = "macos"
+public var CurrentOS: String = "macos"
 
 public func getAppConfigDir(): String {
     if (CurrentOS == "windows") {
@@ -39,7 +39,7 @@ public func getAppConfigFile(): Path {
 // 获取当前系统可所有的可用版本列表
 public func getVersions(): HashMap<String, ArrayList<Version>> {
     let client = getHttpClient()
-    let res = client.get(config.index)
+    let res = client.get(defaultConfig.index)
     let versions = Array<Version>.fromJson(JsonReader(res.body))
     let groups = HashMap<String, ArrayList<Version>>()
     for (version in versions) {
@@ -47,7 +47,9 @@ public func getVersions(): HashMap<String, ArrayList<Version>> {
             if (groups.contains(version.channel)) {
                 groups[version.channel].add(version)
             } else {
-                groups[version.channel] = ArrayList<Version>([version])
+                let list = ArrayList<Version>()
+                list.add(version)
+                groups[version.channel] = list
             }
         }
     }
@@ -86,7 +88,7 @@ public func listdir(path: Path): ArrayList<Path> {
     return dirs
 }
 
-public func getHttpClient() {
+public func getHttpClient(): Client {
     var tls = TlsClientConfig()
     if (CurrentOS == "windows" || (getVariable("NO_VERIFY_SSL") ?? "NO") == "YES") {
         tls.verifyMode = CertificateVerifyMode.TrustAll
@@ -94,28 +96,41 @@ public func getHttpClient() {
     return ClientBuilder().readTimeout(Duration.minute).tlsConfig(tls).build()
 }
 
+// 获取 stdx 路径（支持新旧目录结构）
+public func getStdxPath(version: String, libType: String): String {
+    let osName = if (CurrentOS == "macos") { "macos" } else if (CurrentOS == "windows") { "windows" } else { "linux" }
+    let versionBasePath = Path(defaultConfig.stdxDir).join(version)
+    
+    let runtimeTypes = ["llvm", "cjnative"]
+    for (runtimeType in runtimeTypes) {
+        let testPath = versionBasePath.join("${osName}_${arch}_${runtimeType}").join(libType).join("stdx")
+        if (exists(testPath)) {
+            return testPath.toString()
+        }
+    }
+    
+    versionBasePath.join("${osName}_${arch}_llvm").join(libType).join("stdx").toString()
+}
+
 @When[os == "Windows"]
-public func uncompress(ext: String, source: String, target: String) {
+public func uncompress(ext: String, source: String, target: String): Unit {
     match (ext) {
         case "zip" =>
             let reader = Reader.open(source)
             reader.extractAll(target)
             reader.close()
-            ()
         case _ => println("unsupport file format")
     }
 }
 
 @When[os == "Linux" || os == "macOS"]
-public func uncompress(ext: String, source: String, target: String) {
+public func uncompress(ext: String, source: String, target: String): Unit {
     match (ext) {
         case "zip" =>
             let reader = Reader.open(source)
             reader.extractAll(target)
             reader.close()
-            ()
         case "tar.gz" =>
-            // tar.gz 格式使用系统命令
             let (status, out, outerr) = executeWithOutput("tar", ["-zxf", source, "-C", target])
             if (status != 0) {
                 println("Install failed: ")
@@ -123,7 +138,6 @@ public func uncompress(ext: String, source: String, target: String) {
                 println(String.fromUtf8(outerr))
                 return
             }
-            ()
         case _ => println("unsupported file format: ${ext}")
     }
 }

@@ -4,11 +4,11 @@ import std.fs.{Path, exists, canonicalize}
 import std.sort.sort
 import std.collection.ArrayList
 import cjvs.tools.listdir
-import cjvs.config.config
+import cjvs.config.defaultConfig
 
 // 列出已安装的 stdx 版本
 func stdxList(_: Array<String>) {
-    let stdxDir = Path(config.stdxDir)
+    let stdxDir = Path(defaultConfig.stdxDir)
 
     if (!exists(stdxDir)) {
         println("No stdx versions installed.")
@@ -47,8 +47,8 @@ func stdxList(_: Array<String>) {
                 // 格式: <config.stdxDir>/<version>/<platform>/<libType>/stdx
                 let realPath = canonicalize(Path(stdxLinkPath)).toString()
                 // 去掉 stdxDir 前缀，获取相对路径
-                let relativePath = if (realPath.size > config.stdxDir.size && realPath.size > config.stdxDir.size + 1) {
-                    realPath[config.stdxDir.size + 1..]
+                let relativePath = if (realPath.size > defaultConfig.stdxDir.size && realPath.size > defaultConfig.stdxDir.size + 1) {
+                    realPath[defaultConfig.stdxDir.size + 1..]
                 } else {
                     ""
                 }
@@ -59,13 +59,13 @@ func stdxList(_: Array<String>) {
                 }
             } catch (e: Exception) {
                 // 如果读取符号链接失败，使用配置文件
-                currentVersion = config.stdxDefault
+                currentVersion = defaultConfig.stdxDefault
             }
         } else {
-            currentVersion = config.stdxDefault
+            currentVersion = defaultConfig.stdxDefault
         }
     } else {
-        currentVersion = config.stdxDefault
+        currentVersion = defaultConfig.stdxDefault
     }
 
     for (versionPath in versions) {

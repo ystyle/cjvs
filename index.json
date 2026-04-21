@@ -1,7 +1,7 @@
 [
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-linux_x64.tar.gz&objectKey=6719f1eb3af6947e3c6af327",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.13",
     "os": "linux",
@@ -10,7 +10,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-linux_aarch64.tar.gz&objectKey=6719f1ec3af6947e3c6af328",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.13",
     "os": "linux",
@@ -19,7 +19,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-windows_x64.zip&objectKey=6719f1e13af6947e3c6af326",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "zip",
     "version": "0.53.13",
     "os": "windows",
@@ -28,7 +28,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-darwin_x64.tar.gz&objectKey=6719f1c13af6947e3c6af325",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.13",
     "os": "darwin",
@@ -37,7 +37,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.13-darwin_aarch64.tar.gz&objectKey=6719f1b33af6947e3c6af322",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.13",
     "os": "darwin",
@@ -46,7 +46,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-linux_x64.tar.gz&objectKey=67a2c8976a75297d1cdc1d4c",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.18",
     "os": "linux",
@@ -55,7 +55,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-linux_aarch64.tar.gz&objectKey=67a2c8606a75297d1cdc1d48",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.18",
     "os": "linux",
@@ -64,7 +64,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-windows_x64.zip&objectKey=67a2c8a26a75297d1cdc1d4e",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "zip",
     "version": "0.53.18",
     "os": "windows",
@@ -73,7 +73,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-darwin_x64.tar.gz&objectKey=67a2c8976a75297d1cdc1d4d",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.18",
     "os": "darwin",
@@ -82,7 +82,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=Cangjie-0.53.18-darwin_aarch64.tar.gz&objectKey=67a2c88e6a75297d1cdc1d4b",
-    "channel": "beta",
+    "channel": "sts",
     "ext": "tar.gz",
     "version": "0.53.18",
     "os": "darwin",

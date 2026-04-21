@@ -2,7 +2,7 @@ package cjvs
 
 import std.fs.{Directory, File, Path, removeIfExists, exists, rename}
 import std.io.{copy}
-import cjvs.config.config
+import cjvs.config.defaultConfig
 import cjvs.model.Version
 import cjvs.tools.{getHttpClient, uncompress, getVersions}
 
@@ -14,7 +14,7 @@ func install(args: Array<String>) {
     }
     let version = args[1]
     if (args.size == 3) {
-        if (exists(Path(config.storeDir).join(version))) {
+        if (exists(Path(defaultConfig.storeDir).join(version))) {
             println("already installed ${version}")
             return
         }
@@ -22,7 +22,7 @@ func install(args: Array<String>) {
         let filepath = args[2]
         if (exists(filepath) && (filepath.endsWith(".zip") || filepath.endsWith(".tar.gz"))) {
             doinstallLocal(version, filepath)
-            if (config.default.isNone()) {
+            if (defaultConfig.default.isNone()) {
                 defaultVersion(["default", version])
             }
         } else {
@@ -35,12 +35,12 @@ func install(args: Array<String>) {
     for ((channel, versions) in groups) {
         for (item in versions) {
             if (item.version == version) {
-                if (exists(Path(config.storeDir).join(version))) {
+                if (exists(Path(defaultConfig.storeDir).join(version))) {
                     println("already installed ${version}")
                     return
                 }
                 doinstall(item)
-                if (config.default.isNone()) {
+                if (defaultConfig.default.isNone()) {
                     defaultVersion(["default", version])
                 }
                 return
@@ -53,11 +53,11 @@ func install(args: Array<String>) {
 // 安装本地文件
 func doinstallLocal(version: String, filepath: String): Unit {
     // 创建缓存文件夹
-    if (!exists(config.cacheDir)) {
-        Directory.create(config.cacheDir, recursive: true)
+    if (!exists(defaultConfig.cacheDir)) {
+        Directory.create(defaultConfig.cacheDir, recursive: true)
     }
     // 解压
-    let extractDir = Directory.createTemp(config.cacheDir)
+    let extractDir = Directory.createTemp(defaultConfig.cacheDir)
     var ext = Path(filepath).extensionName
     if (ext == "gz") {
         ext = "tar.gz"
@@ -66,10 +66,10 @@ func doinstallLocal(version: String, filepath: String): Unit {
 
     // 移动到安装目录
     let tempCangjieHome = extractDir.join("cangjie")
-    let versionDir = Path(config.storeDir).join(version)
+    let versionDir = Path(defaultConfig.storeDir).join(version)
     rename(tempCangjieHome, to: versionDir)
     // 删除缓存目录
-    removeIfExists(config.cacheDir, recursive: true)
+    removeIfExists(defaultConfig.cacheDir, recursive: true)
     println("install success.")
 }
 
@@ -81,22 +81,22 @@ func doinstall(version: Version): Unit {
         let client = getHttpClient()
         let res = client.get(version.url)
         // 创建缓存文件夹
-        if (!exists(config.cacheDir)) {
-            Directory.create(config.cacheDir, recursive: true)
+        if (!exists(defaultConfig.cacheDir)) {
+            Directory.create(defaultConfig.cacheDir, recursive: true)
         }
         // download
-        let downloadedFile = File.createTemp(config.cacheDir)
+        let downloadedFile = File.createTemp(defaultConfig.cacheDir)
         copy(res.body, to: downloadedFile)
         // 解压
-        let extractDir = Directory.createTemp(config.cacheDir)
+        let extractDir = Directory.createTemp(defaultConfig.cacheDir)
         uncompress(version.ext, downloadedFile.info.path.toString(), extractDir.toString())
         // 移动到安装目录
         let tempCangjieHome = extractDir.join("cangjie")
-        let versionDir = Path(config.storeDir).join(version.version)
+        let versionDir = Path(defaultConfig.storeDir).join(version.version)
         rename(tempCangjieHome, to: versionDir)
         println("install success.")
     } finally {
         // 删除缓存文件
-        removeIfExists(config.cacheDir, recursive: true)
+        removeIfExists(defaultConfig.cacheDir, recursive: true)
     }
 }

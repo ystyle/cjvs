@@ -1,8 +1,8 @@
 package cjvs.stdx
 
 import std.fs.{exists, removeIfExists, SymbolicLink, Path}
-import cjvs.config.config
-import cjvs.tools.getAppConfigFile
+import cjvs.config.defaultConfig
+import cjvs.tools.{getAppConfigFile, getStdxPath}
 
 // 切换 stdx 版本
 func stdxSwitch(args: Array<String>) {
@@ -32,9 +32,9 @@ func stdxSwitch(args: Array<String>) {
     }
 
     // 始终更新配置文件
-    config.stdxDefault = Some(version)
-    config.stdxType = libType
-    config.save(getAppConfigFile())
+    defaultConfig.stdxDefault = Some(version)
+    defaultConfig.stdxType = libType
+    defaultConfig.save(getAppConfigFile())
 
     // 如果在多 shell 环境中，也更新符号链接
     if (let Some(stdxLinkPath) <- getStdxLinkPath()) {

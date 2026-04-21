@@ -2,7 +2,7 @@ package cjvs.stdx
 
 import std.fs.{Path, exists, Directory, removeIfExists, rename}
 import cjvs.tools.{uncompress, getAppConfigFile}
-import cjvs.config.config
+import cjvs.config.defaultConfig
 
 // 安装 stdx 版本
 func stdxInstall(args: Array<String>) {
@@ -35,18 +35,18 @@ func stdxInstall(args: Array<String>) {
     println("installing stdx ${version}...")
 
     // 创建 stdx 目录
-    let stdxDir = Path(config.stdxDir)
+    let stdxDir = Path(defaultConfig.stdxDir)
     if (!exists(stdxDir)) {
         Directory.create(stdxDir)
     }
 
     // 创建缓存目录
-    if (!exists(Path(config.cacheDir))) {
-        Directory.create(config.cacheDir, recursive: true)
+    if (!exists(Path(defaultConfig.cacheDir))) {
+        Directory.create(defaultConfig.cacheDir, recursive: true)
     }
 
     // 解压到临时目录
-    let extractDir = Directory.createTemp(config.cacheDir)
+    let extractDir = Directory.createTemp(defaultConfig.cacheDir)
     println("extracting...")
     uncompress("zip", zipFile, extractDir.toString())
 
@@ -55,14 +55,14 @@ func stdxInstall(args: Array<String>) {
     rename(extractDir, to: targetDir)
 
     // 删除缓存目录
-    removeIfExists(config.cacheDir, recursive: true)
+    removeIfExists(defaultConfig.cacheDir, recursive: true)
 
     println("stdx ${version} installed successfully.")
 
     // 如果是第一个安装的版本，设置为默认
-    if (let None <- config.stdxDefault) {
-        config.stdxDefault = Some(version)
-        config.save(getAppConfigFile())
+    if (let None <- defaultConfig.stdxDefault) {
+        defaultConfig.stdxDefault = Some(version)
+        defaultConfig.save(getAppConfigFile())
         println("${version} is set as default stdx.")
     }
 }
