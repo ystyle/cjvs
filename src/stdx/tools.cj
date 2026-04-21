@@ -3,9 +3,9 @@ package cjvs.stdx
 import std.fs.{Path, exists}
 import std.collection.{ArrayList, HashMap}
 import std.env.getVariable
-import cjvs.config.config
+import cjvs.config.defaultConfig
 import cjvs.model.StdxVersion
-import cjvs.tools.{getHttpClient, CurrentOS, arch}
+import cjvs.tools.{getHttpClient, CurrentOS, arch, getStdxPath}
 import stdx.encoding.json.stream.*
 
 // ==================== stdx 工具函数 ====================
@@ -13,12 +13,10 @@ import stdx.encoding.json.stream.*
 // 获取远程 stdx 版本列表
 func getStdxVersions(): HashMap<String, ArrayList<StdxVersion>> {
     let client = getHttpClient()
-    let res = client.get(config.index)
-    // 假设 index.json 中有 stdx 字段
+    let res = client.get(defaultConfig.index)
     let reader = JsonReader(res.body)
     var stdxVersions = ArrayList<StdxVersion>()
 
-    // 解析 JSON，找到 stdx 数组
     while (let Some(v) <- reader.peek()) {
         match (v) {
             case BeginObject =>
@@ -37,7 +35,6 @@ func getStdxVersions(): HashMap<String, ArrayList<StdxVersion>> {
         }
     }
 
-    // 按系统架构过滤
     let groups = HashMap<String, ArrayList<StdxVersion>>()
     for (version in stdxVersions) {
         if (version.os == CurrentOS && version.arch == arch) {
@@ -51,24 +48,6 @@ func getStdxVersions(): HashMap<String, ArrayList<StdxVersion>> {
     return groups
 }
 
-// 获取指定版本的 stdx 路径
-public func getStdxPath(version: String, libType: String): String {
-    let osName = if (CurrentOS == "macos") { "macos" } else { "linux" }
-    let versionBasePath = Path(config.stdxDir).join(version)
-
-    // Try different runtime types: llvm (old) or cjnative (new)
-    let runtimeTypes = ["llvm", "cjnative"]
-    for (runtimeType in runtimeTypes) {
-        let testPath = versionBasePath.join("${osName}_${arch}_${runtimeType}").join(libType).join("stdx")
-        if (exists(testPath)) {
-            return testPath.toString()
-        }
-    }
-
-    // Fallback to llvm (for error messages)
-    return versionBasePath.join("${osName}_${arch}_llvm").join(libType).join("stdx").toString()
-}
-
 // 检查 stdx 版本是否已安装
 func isStdxInstalled(version: String): Bool {
     let dynamicPath = getStdxPath(version, "dynamic")
@@ -77,7 +56,6 @@ func isStdxInstalled(version: String): Bool {
 }
 
 // 获取多 shell 环境下的 stdx 符号链接路径
-// 返回格式: /tmp/cjvs_multishells/stdx_${pid}_${unix}
 public func getStdxLinkPath(): ?String {
     if (let Some(multishellPath) <- getVariable("CJVS_MULTISHELL_PATH")) {
         let pathParts = multishellPath.split("/")

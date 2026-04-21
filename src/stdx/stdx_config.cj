@@ -1,14 +1,14 @@
 package cjvs.stdx
 
 import std.fs.{exists, removeIfExists, SymbolicLink, Path}
-import cjvs.config.config
-import cjvs.tools.getAppConfigFile
+import cjvs.config.defaultConfig
+import cjvs.tools.{getAppConfigFile, getStdxPath}
 
 // 设置默认库类型
 func stdxConfig(args: Array<String>) {
     if (args.size < 3) {
         println("Usage: cjvs stdx config <static|dynamic>")
-        println("Current default type: ${config.stdxType}")
+        println("Current default type: ${defaultConfig.stdxType}")
         return
     }
 
@@ -21,7 +21,7 @@ func stdxConfig(args: Array<String>) {
     // 检查是否在多 shell 环境中
     if (let Some(stdxLinkPath) <- getStdxLinkPath()) {
         // 需要重新链接符号链接
-        if (let Some(v) <- config.stdxDefault) {
+        if (let Some(v) <- defaultConfig.stdxDefault) {
             // 使用 getStdxPath 支持新旧格式
             let newStdxRealPath = Path(getStdxPath(v, typeArg))
 
@@ -47,8 +47,8 @@ func stdxConfig(args: Array<String>) {
             }
 
             // 更新配置
-            config.stdxType = typeArg
-            config.save(getAppConfigFile())
+            defaultConfig.stdxType = typeArg
+            defaultConfig.save(getAppConfigFile())
 
             println("Library type switched to: ${typeArg}")
             println("Current stdx version: ${v}")
@@ -57,11 +57,11 @@ func stdxConfig(args: Array<String>) {
         }
     } else {
         // 不在多 shell 环境中，只更新配置
-        config.stdxType = typeArg
-        config.save(getAppConfigFile())
+        defaultConfig.stdxType = typeArg
+        defaultConfig.save(getAppConfigFile())
 
         println("Default library type set to: ${typeArg}")
-        if (let Some(v) <- config.stdxDefault) {
+        if (let Some(v) <- defaultConfig.stdxDefault) {
             println("Current stdx version: ${v}")
             println("Please restart your shell or run: eval \"\$(cjvs stdx-env bash)\"")
         } else {

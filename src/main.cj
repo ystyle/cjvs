@@ -5,7 +5,7 @@ import std.env.{getCommandLine, getVariable}
 import std.fs.{Directory, File, exists, OpenMode}
 import cjvs.stdx.{handleCommand, stdxEnv}
 import cjvs.model.Config
-import cjvs.config.{config, CJVS_MULTISHELL_PATH}
+import cjvs.config.defaultConfig
 import cjvs.env.genenv
 import cjvs.tools.{getAppConfigDir, getAppConfigFile, CurrentOS, ContainsArray}
 import cjpminfo.*
@@ -29,8 +29,6 @@ main(): Unit {
             printConfig()
             return
         }
-    } else {
-        CJVS_MULTISHELL_PATH = getVariable("CJVS_MULTISHELL_PATH") ?? ""
     }
 
     // 检查设置
@@ -100,7 +98,7 @@ if (is-admin) {
 func check(): Bool {
     // 读取或创建配置文件
     let configdir = getAppConfigDir()
-    config = if (exists(getAppConfigFile())) {
+    defaultConfig = if (exists(getAppConfigFile())) {
         let ff: File = File(getAppConfigFile(), OpenMode.Read)
         let conf = Config.fromJson(JsonReader(ff))
         conf.initPaths(configdir)

@@ -1,23 +1,18 @@
 package cjvs.env
 
-import std.fs.{Path, exists}
+import std.fs.Path
 import std.collection.ArrayList
-import cjvs.tools.{CurrentOS, arch}
-import cjvs.config.config
+import cjvs.tools.CurrentOS
+import cjvs.tools.arch
 
 // ==================== 路径模板字符串常量 ====================
 
 // PATH 环境变量相对路径
-public let BIN_PATH = "bin"
-public let TOOLS_BIN_PATH = "tools/bin"
-public let TOOLS_LIB_PATH = "tools/lib"
-public let DEBUGGER_BIN_PATH = "debugger/bin"
-public let DEBUGGER_LIB_PATH = "debugger/third_party/lldb/lib"
-
-// 运行时库路径模板 (os 和 arch 是占位符，由 render 替换)
-public let RUNTIME_LIB_LLVM = "runtime/lib/%s_%s_llvm"
-public let RUNTIME_LIB_CJNATIVE = "runtime/lib/%s_%s_cjnative"
-public let LIB_JET = "lib/%s_x86_64_jet"
+public let BIN_PATH: String = "bin"
+public let TOOLS_BIN_PATH: String = "tools/bin"
+public let TOOLS_LIB_PATH: String = "tools/lib"
+public let DEBUGGER_BIN_PATH: String = "debugger/bin"
+public let DEBUGGER_LIB_PATH: String = "debugger/third_party/lldb/lib"
 
 // ==================== 实际路径（用于文件操作）====================
 
@@ -43,38 +38,6 @@ public func runtimeLibPaths(home: Path): ArrayList<Path> {
         home.join("runtime/lib/windows_x86_64_llvm"),
         home.join("runtime/lib/windows_x86_64_cjnative"),
     ])
-}
-
-// stdx 路径生成（支持新旧目录结构）
-public func getStdxPath(version: String, libType: String): String {
-    let osName = if (CurrentOS == "macos") { "macos" } else if (CurrentOS == "windows") { "windows" } else { "linux" }
-    let versionBasePath = Path("${config.stdxDir}/${version}")
-    
-    let runtimeTypes = ["llvm", "cjnative"]
-    for (runtimeType in runtimeTypes) {
-        let testPath = versionBasePath.join("${osName}_${arch}_${runtimeType}").join(libType).join("stdx")
-        if (exists(testPath)) {
-            return testPath.toString()
-        }
-    }
-    
-    versionBasePath.join("${osName}_x86_64_llvm").join(libType).join("stdx").toString()
-}
-
-// 获取 PATH 环境变量路径列表
-public func getEnvPaths(home: Path): ArrayList<Path> {
-    ArrayList<Path>([
-        binPath(home),
-        toolsBinPath(home),
-        debuggerBinPath(home),
-    ])
-}
-
-// 获取 LD_LIBRARY_PATH 路径列表
-public func getLibPaths(home: Path): ArrayList<Path> {
-    let paths = runtimeLibPaths(home)
-    paths.add(all: [toolsLibPath(home), debuggerLibPath(home)])
-    paths
 }
 
 // 字符串列表连接

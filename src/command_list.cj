@@ -3,12 +3,12 @@ package cjvs
 import std.fs.{Path, exists, FileInfo, SymbolicLink}
 import std.sort.sort
 import std.env.getVariable
-import cjvs.config.{config}
+import cjvs.config.defaultConfig
 import cjvs.tools.listdir
 
 // 列出本地已安装的版本
 func listVersion(_: Array<String>) {
-    let configdir = Path(config.storeDir)
+    let configdir = Path(defaultConfig.storeDir)
     var dirs = listdir(configdir).toArray()
     var used: ?Path = None
 
