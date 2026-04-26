@@ -6,6 +6,10 @@ func usage() {
 Usage: cjvs [options...]
   list, ls        List Cangjie installations.
   ls-remote, rls  List all remote Cangjie versions.
+                    eg:
+                      cjvs rls                                     # List all versions
+                      cjvs rls sts                                 # List STS versions only
+                      cjvs rls sts --beta                          # List STS versions with beta
   install, i      Install a new Cangjie version.
                     eg:
                       cjvs install 0.53.13 # install online

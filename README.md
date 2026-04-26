@@ -90,6 +90,10 @@ $ cjvs
 Usage: cjvs [options...]
   list, ls        List Cangjie installations.
   ls-remote, rls  List all remote Cangjie versions.
+                    eg:
+                      cjvs rls                                     # List all versions
+                      cjvs rls sts                                 # List STS versions only
+                      cjvs rls sts --beta                          # List STS versions with beta
   install, i      Install a new Cangjie version.
                     eg:
                       cjvs install 0.53.13 # install online
@@ -108,6 +112,10 @@ Usage: cjvs [options...]
                       cjvs stdx default 1.0.0 dynamic              # Set default with dynamic library
                       cjvs stdx config static                      # Set default library type
                       cjvs stdx remove 1.0.0                       # Remove stdx version
+  stdx-env        Generate stdx environment variables for current shell.
+                    eg:
+                      cjvs stdx-env zsh                            # Generate env for zsh
+                      cjvs stdx-env bash                           # Generate env for bash
 
 GLOBAL OPTIONS:
   --help, -h     show help
@@ -121,7 +129,25 @@ GLOBAL OPTIONS:
   Channel: sts
         0.53.13
         0.53.18
+        1.1.0
+        1.1.0-android
+        1.1.0-ohos
   ```
+- 显示可用STS版本（含 beta）
+  ```shell
+  $ cjvs rls sts --beta
+  Channel: sts
+        0.53.13
+        0.53.18
+        1.1.0
+        1.1.0-android
+        1.1.0-ohos
+        beta:
+                1.1.0-beta.23
+                1.1.0-beta.24
+                1.1.0-beta.25
+  ```
+
 - 在线安装版本，第一次安装的版本会被设置为默认版本
   ```shell
   $ cjvs install 0.53.13

@@ -8,7 +8,7 @@ import cjvs.model.Config
 import cjvs.config.defaultConfig
 import cjvs.env.genenv
 import cjvs.tools.{getAppConfigDir, getAppConfigFile, CurrentOS, ContainsArray}
-import cjpminfo.*
+import cjpminfo.ModuleVer
 
 let version: String = @ModuleVer("0.3.0")
 

@@ -12,3 +12,7 @@ target
 *.zip
 scripts
 log.txt
+.opencode
+opencode
+specs
+openspec
