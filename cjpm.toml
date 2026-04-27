@@ -5,7 +5,7 @@
 [package]
   name = "cjvs"
   description = "仓颉编译器版本切换工具"
-  version = "0.3.8"
+  version = "0.3.9"
   cjc-version = "1.1.0"
   compile-option = "--static -Woff driver-arg -Woff unused"
   link-option = ""
@@ -28,6 +28,8 @@
   path-option = ["${CANGJIE_STDX_PATH}"]
 [target.x86_64-w64-mingw32.bin-dependencies]
   path-option = ["${CANGJIE_STDX_PATH}"]
+[target.x86_64-w64-mingw32]
+  link-option = "-lcrypt32"
 
 [profile.build]
 incremental = true

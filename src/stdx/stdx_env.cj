@@ -50,14 +50,14 @@ public func stdxEnv(args: Array<String>): Unit {
 
     let shell = if (args[0] == "stdx-env") { args[1] } else { args[2] }
 
-    if (let None <- config.stdxDefault) {
+    if (let None <- defaultConfig.stdxDefault) {
         println("Error: No default stdx version set.")
         println("Use 'cjvs stdx default <version>' to set a default version.")
         return
     }
 
-    let libType = config.stdxType
-    let version = config.stdxDefault ?? ""
+    let libType = defaultConfig.stdxType
+    let version = defaultConfig.stdxDefault ?? ""
     let stdxPath = getStdxPath(version, libType)
 
     println(renderStdxEnv(shell, stdxPath))

@@ -22,3 +22,9 @@ tasks:
       - cp scripts/archlinux/PKGBUILD ${HOME}/Code/Linux/cjvs/
       - cp scripts/archlinux/.SRCINFO ${HOME}/Code/Linux/cjvs/
 
+  build-windows:
+    cmds:
+      - export CANGJIE_STDX_PATH="/home/ystyle/.config/cjvs/stdx/1.1.0.1-windows/windows_x86_64_cjnative/static/stdx" && cjpm build --target x86_64-w64-mingw32
+      - cp ./target/x86_64-w64-mingw32/release/bin/main.exe ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
+      - zip -j cjvs_v{{.VERSION}}_windows_amd64.zip ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
+
