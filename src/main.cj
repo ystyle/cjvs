@@ -25,7 +25,7 @@ main(): Unit {
         return
     }
     if (let None <- getVariable("CJVS_MULTISHELL_PATH")) {
-        if (!args.containsAny(["env"])) {
+        if (args.size == 0 || args[0] == "--help" || args[0] == "-h") {
             printConfig()
             return
         }
