@@ -1,0 +1,64 @@
+name: 'Setup Cangjie Environment'
+description: 'Install a Cangjie version using cjvs and set up environment variables'
+author: 'ystyle'
+
+inputs:
+  version:
+    description: 'Cangjie version to install (e.g. 1.1.0)'
+    required: false
+    default: '1.1.0'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download cjvs
+      shell: bash
+      run: |
+        LATEST=$(curl -s https://api.github.com/repos/ystyle/cjvs/releases/latest | grep tag_name | cut -d'"' -f4)
+        echo "Latest cjvs release: ${LATEST}"
+
+        case "$(uname -s)" in
+          Linux)  SUFFIX="linux_amd64.zip" ;;
+          Darwin) echo "Error: macOS build not available yet"; exit 1 ;;
+          MINGW*|MSYS*) SUFFIX="windows_amd64.zip" ;;
+          *) echo "Error: Unsupported platform $(uname -s)"; exit 1 ;;
+        esac
+
+        ARCHIVE_URL="https://github.com/ystyle/cjvs/releases/download/${LATEST}/cjvs_v${LATEST#v}_${SUFFIX}"
+        echo "Downloading: ${ARCHIVE_URL}"
+        curl -sL "${ARCHIVE_URL}" -o /tmp/cjvs.zip
+        unzip -o /tmp/cjvs.zip -d /tmp/cjvs-bin
+        chmod +x /tmp/cjvs-bin/cjvs
+        echo "/tmp/cjvs-bin" >> $GITHUB_PATH
+
+    - name: Install Cangjie ${{ inputs.version }}
+      shell: bash
+      run: |
+        cjvs install ${{ inputs.version }}
+        cjvs use ${{ inputs.version }}
+
+    - name: Setup environment variables
+      shell: bash
+      run: |
+        # Get CANGJIE_HOME from installed version
+        CJVS_STORE="$HOME/.config/cjvs/store"
+        INSTALLED_VERSION="${{ inputs.version }}"
+        CANGJIE_HOME="${CJVS_STORE}/${INSTALLED_VERSION}"
+        echo "CANGJIE_HOME=${CANGJIE_HOME}" >> $GITHUB_ENV
+
+        # Add bin directories to PATH
+        echo "${CANGJIE_HOME}/bin" >> $GITHUB_PATH
+        echo "${CANGJIE_HOME}/tools/bin" >> $GITHUB_PATH
+
+        # Set up LD_LIBRARY_PATH
+        OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
+        case "${OS_TYPE}" in
+          linux*) OS_TYPE="linux" ;;
+          darwin*) OS_TYPE="macos" ;;
+          mingw*|msys*) OS_TYPE="windows" ;;
+        esac
+        ARCH=$(uname -m)
+        [ "$ARCH" = "x86_64" ] && ARCH="x86_64"
+
+        LD_PATH="${CANGJIE_HOME}/runtime/lib/${OS_TYPE}_${ARCH}_llvm:${CANGJIE_HOME}/runtime/lib/${OS_TYPE}_${ARCH}_cjnative:${CANGJIE_HOME}/lib/${OS_TYPE}_x86_64_jet:${CANGJIE_HOME}/tools/lib"
+        echo "LD_LIBRARY_PATH=${LD_PATH}" >> $GITHUB_ENV
