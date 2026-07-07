@@ -1,65 +1,75 @@
 package cjvs.stdx
 
-import std.fs.{Path, exists, Directory, removeIfExists, rename}
-import cjvs.tools.{uncompress, getAppConfigFile}
+import std.fs.{Path, exists, Directory, removeIfExists, rename, File}
+import std.io.copy
+import cjvs.tools.{uncompress, getAppConfigFile, getHttpClient, CurrentOS, arch}
 import cjvs.config.defaultConfig
 
 // 安装 stdx 版本
 func stdxInstall(args: Array<String>) {
-    if (args.size < 4) {
-        println("Usage: cjvs stdx install <version> <zip-file>")
+    if (args.size < 3) {
+        println("Usage: cjvs stdx install <version> [zip-file]")
+        println("  zip-file: local zip file (optional, auto-download from atomgit if omitted)")
         return
     }
 
     let version = args[2]
-    let zipFile = args[3]
+    let zipFile = if (args.size >= 4) { args[3] } else { "" }
 
-    // 检查是否已安装
     if (isStdxInstalled(version)) {
         println("stdx ${version} is already installed.")
         return
     }
 
-    // 检查 zip 文件是否存在
-    if (!exists(Path(zipFile))) {
-        println("zip file not found: ${zipFile}")
-        return
-    }
-
-    // 检查文件扩展名
-    if (!zipFile.endsWith(".zip")) {
-        println("file must be a .zip file")
-        return
-    }
-
     println("installing stdx ${version}...")
 
-    // 创建 stdx 目录
     let stdxDir = Path(defaultConfig.stdxDir)
     if (!exists(stdxDir)) {
         Directory.create(stdxDir)
     }
 
-    // 创建缓存目录
     if (!exists(Path(defaultConfig.cacheDir))) {
         Directory.create(defaultConfig.cacheDir, recursive: true)
     }
 
-    // 解压到临时目录
+    var actualZip = zipFile
+    if (zipFile == "") {
+        let osName = if (CurrentOS == "macos") { "mac" } else { CurrentOS }
+        let archName = if (arch == "x86_64") { "x64" } else { arch }
+        let url = "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v${version}/cangjie-stdx-${osName}-${archName}-${version}.zip"
+        println("downloading from atomgit...")
+        let client = getHttpClient()
+        let res = client.get(url)
+        if (res.status != 200) {
+            println("download failed: HTTP ${res.status}")
+            return
+        }
+        let downloadedFile = File.createTemp(defaultConfig.cacheDir)
+        copy(res.body, to: downloadedFile)
+        actualZip = downloadedFile.info.path.toString()
+        println("download complete.")
+    } else {
+        if (!exists(Path(actualZip))) {
+            println("zip file not found: ${actualZip}")
+            return
+        }
+        if (!actualZip.endsWith(".zip")) {
+            println("file must be a .zip file")
+            return
+        }
+    }
+
     let extractDir = Directory.createTemp(defaultConfig.cacheDir)
     println("extracting...")
-    uncompress("zip", zipFile, extractDir.toString())
+    uncompress("zip", actualZip, extractDir.toString())
 
-    // 移动到目标目录
     let targetDir = stdxDir.join(version)
     rename(extractDir, to: targetDir)
 
-    // 删除缓存目录
     removeIfExists(defaultConfig.cacheDir, recursive: true)
 
     println("stdx ${version} installed successfully.")
 
-    // 如果是第一个安装的版本，设置为默认
     if (let None <- defaultConfig.stdxDefault) {
         defaultConfig.stdxDefault = Some(version)
         defaultConfig.save(getAppConfigFile())

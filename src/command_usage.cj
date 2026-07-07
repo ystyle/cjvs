@@ -21,7 +21,8 @@ Usage: cjvs [options...]
   stdx            Manage stdx (extension library) versions.
                     eg:
                       cjvs stdx list                              # List installed stdx versions
-                      cjvs stdx install 1.0.0 ~/Downloads/stdx.zip # Install stdx from local zip
+                      cjvs stdx install 1.0.0                              # Install stdx (auto-download)
+                      cjvs stdx install 1.0.0 ~/Downloads/stdx.zip         # Install from local zip
                       cjvs stdx use 1.0.0                          # Switch stdx version
                       cjvs stdx use 1.0.0 static                   # Switch with static library
                       cjvs stdx default 1.0.0                      # Set default stdx version
