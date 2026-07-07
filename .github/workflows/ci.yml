@@ -11,35 +11,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Cangjie SDK
+      - name: Setup Cangjie with cjvs
         run: |
           set -e
-          # 直接下载 SDK，不依赖 cjvs
-          curl -sL "https://dll.ystyle.top/images/cjvs-index.json" -o /tmp/index.json
-          URL=$(jq -r '.[] | select(.version == "1.1.0" and .os == "linux" and .arch == "x86_64") | .url' /tmp/index.json)
-          echo "Downloading SDK from: ${URL}"
-          curl -sL "${URL}" -o /tmp/cangjie.tar.gz
-          mkdir -p /opt/cangjie
-          tar -zxf /tmp/cangjie.tar.gz -C /opt/cangjie
-          CANGJIE_HOME="/opt/cangjie/cangjie"
-          echo "CANGJIE_HOME=${CANGJIE_HOME}" >> $GITHUB_ENV
-          echo "${CANGJIE_HOME}/bin" >> $GITHUB_PATH
-          echo "${CANGJIE_HOME}/tools/bin" >> $GITHUB_PATH
+          # 下载 bootstrap cjvs 二进制（从 v0.4.0 release）
+          curl -sL "https://github.com/ystyle/cjvs/releases/download/v0.4.0/cjvs_bootstrap_linux_amd64.zip" -o /tmp/cjvs.zip
+          unzip -o /tmp/cjvs.zip -d /tmp/cjvs-bin
+          chmod +x /tmp/cjvs-bin/cjvs
+          export PATH="/tmp/cjvs-bin:$PATH"
+          echo "/tmp/cjvs-bin" >> $GITHUB_PATH
 
-          # 下载 stdx
-          curl -sL "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v1.1.0.1/cangjie-stdx-linux-x64-1.1.0.1.zip" -o /tmp/stdx.zip
-          mkdir -p /opt/stdx/1.1.0.1
-          unzip -o /tmp/stdx.zip -d /opt/stdx/1.1.0.1
-          STDX_PATH="/opt/stdx/1.1.0.1/cangjie/lib/linux_x86_64_cjnative/static/stdx"
-          echo "CANGJIE_STDX_PATH=${STDX_PATH}" >> $GITHUB_ENV
+          # 安装 SDK
+          cjvs install 1.1.0
+          cjvs use 1.1.0
+
+          # 安装 stdx
+          cjvs stdx install 1.1.0.1
 
       - name: Build
-        run: |
-          export CANGJIE_HOME="/opt/cangjie/cangjie"
-          export CANGJIE_STDX_PATH="/opt/stdx/1.1.0.1/cangjie/lib/linux_x86_64_cjnative/static/stdx"
-          export PATH="${CANGJIE_HOME}/bin:${CANGJIE_HOME}/tools/bin:$PATH"
-          export LD_LIBRARY_PATH="${CANGJIE_HOME}/runtime/lib/linux_x86_64_cjnative:${CANGJIE_HOME}/runtime/lib/linux_x86_64_llvm:${CANGJIE_HOME}/tools/lib"
-          cjpm build
+        run: cjpm build
 
       - name: Test
         run: |
