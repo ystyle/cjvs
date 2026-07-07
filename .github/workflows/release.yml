@@ -1,0 +1,46 @@
+name: Build and Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Cangjie
+        uses: ystyle/setup-cangjie@v1
+        with:
+          version: 1.1.0
+          stdx-version: 1.1.0.1
+
+      - name: Install mingw toolchain
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64
+
+      - name: Install Windows stdx
+        run: |
+          curl -sL "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v1.1.0.1/cangjie-stdx-windows-x64-1.1.0.1.zip" -o /tmp/stdx-win.zip
+          cjvs stdx install 1.1.0.1-windows /tmp/stdx-win.zip
+
+      - name: Build Linux binary
+        run: |
+          cjpm build
+          cp ./target/release/bin/main ./target/release/bin/cjvs
+          mkdir -p dist
+          zip -j dist/cjvs_linux_amd64.zip ./target/release/bin/cjvs
+
+      - name: Build Windows binary
+        env:
+          CANGJIE_STDX_PATH: "$HOME/.config/cjvs/stdx/1.1.0.1-windows/windows_x86_64_cjnative/static/stdx"
+        run: |
+          cjpm build --target x86_64-w64-mingw32
+          cp ./target/x86_64-w64-mingw32/release/bin/main.exe ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
+          zip -j dist/cjvs_windows_amd64.zip ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.ref_name }} dist/* --repo ${{ github.repository }}

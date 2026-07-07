@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Cangjie
+        uses: ystyle/setup-cangjie@v1
+        with:
+          version: 1.1.0
+          stdx-version: 1.1.0.1
+
+      - name: Build
+        run: cjpm build
+
+      - name: Test
+        run: |
+          ./target/release/bin/main --version
+          ./target/release/bin/main env bash | head -5
