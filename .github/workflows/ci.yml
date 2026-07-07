@@ -11,11 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Cangjie
-        uses: ystyle/setup-cangjie@v1
-        with:
-          version: 1.1.0
-          stdx-version: 1.1.0.1
+      - name: Setup Cangjie SDK
+        run: |
+          set -e
+          TAG="v0.3.9"
+          curl -sL "https://github.com/ystyle/cjvs/releases/download/${TAG}/cjvs_v0.3.9_linux_amd64.zip" -o /tmp/cjvs.zip
+          unzip -o /tmp/cjvs.zip -d /tmp/cjvs-bin
+          chmod +x /tmp/cjvs-bin/cjvs
+          echo "/tmp/cjvs-bin" >> $GITHUB_PATH
+          cjvs install 1.1.0
+          cjvs use 1.1.0
+          cjvs stdx install 1.1.0.1
 
       - name: Build
         run: cjpm build
