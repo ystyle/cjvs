@@ -10,31 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: Zxilly/setup-cangjie@v3
+        with:
+          channel: sts
+          version: 1.1.0
+          components: stdx
+
       - name: Install mingw toolchain
         run: sudo apt-get update && sudo apt-get install -y mingw-w64 zip
-
-      - name: Setup Cangjie with cjvs
-        run: |
-          set -e
-          curl -sL "https://github.com/ystyle/cjvs/releases/download/v0.4.0/cjvs_bootstrap_linux_amd64.zip" -o /tmp/cjvs.zip
-          unzip -o /tmp/cjvs.zip -d /tmp/cjvs-bin
-          chmod +x /tmp/cjvs-bin/cjvs
-          export PATH="/tmp/cjvs-bin:$PATH"
-
-          cjvs install 1.1.0
-          cjvs use 1.1.0
-          cjvs stdx install 1.1.0.1
-
-          curl -sL "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v1.1.0.1/cangjie-stdx-windows-x64-1.1.0.1.zip" -o /tmp/stdx-win.zip
-          cjvs stdx install 1.1.0.1-windows /tmp/stdx-win.zip
-
-          # 设置环境变量
-          CJVS_STORE="$HOME/.config/cjvs/store/1.1.0"
-          echo "CANGJIE_HOME=${CJVS_STORE}" >> $GITHUB_ENV
-          echo "CANGJIE_STDX_PATH=${CJVS_STORE%store*}stdx/1.1.0.1/linux_x86_64_cjnative/static/stdx" >> $GITHUB_ENV
-          echo "${CJVS_STORE}/bin" >> $GITHUB_PATH
-          echo "${CJVS_STORE}/tools/bin" >> $GITHUB_PATH
-          echo "LD_LIBRARY_PATH=${CJVS_STORE}/runtime/lib/linux_x86_64_cjnative:${CJVS_STORE}/tools/lib:${CJVS_STORE}/third_party/llvm/lib" >> $GITHUB_ENV
 
       - name: Build Linux binary
         run: |
@@ -43,10 +26,16 @@ jobs:
           mkdir -p dist
           zip -j dist/cjvs_linux_amd64.zip ./target/release/bin/cjvs
 
-      - name: Build Windows binary
-        env:
-          CANGJIE_STDX_PATH: "$HOME/.config/cjvs/stdx/1.1.0.1-windows/windows_x86_64_cjnative/static/stdx"
+      - name: Install Windows stdx
         run: |
+          curl -sL "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v1.1.0.1/cangjie-stdx-windows-x64-1.1.0.1.zip" -o /tmp/stdx-win.zip
+          mkdir -p $HOME/.config/cjvs/cache
+          mkdir -p $HOME/.config/cjvs/stdx/1.1.0.1-windows
+          unzip -o /tmp/stdx-win.zip -d $HOME/.config/cjvs/stdx/1.1.0.1-windows
+
+      - name: Build Windows binary
+        run: |
+          export CANGJIE_STDX_PATH="$HOME/.config/cjvs/stdx/1.1.0.1-windows/cangjie/lib/windows_x86_64_cjnative/static/stdx"
           cjpm build --target x86_64-w64-mingw32
           cp ./target/x86_64-w64-mingw32/release/bin/main.exe ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
           zip -j dist/cjvs_windows_amd64.zip ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
