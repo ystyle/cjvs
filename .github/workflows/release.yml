@@ -32,6 +32,7 @@ jobs:
           curl -sL "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v1.1.0.1/cangjie-stdx-windows-x64-1.1.0.1.zip" -o /tmp/stdx-win.zip
           mkdir -p $HOME/.config/cjvs/cache $HOME/.config/cjvs/stdx/1.1.0.1-windows
           unzip -o /tmp/stdx-win.zip -d $HOME/.config/cjvs/stdx/1.1.0.1-windows
+          find $HOME/.config/cjvs/stdx/1.1.0.1-windows -name "libstdx.a" 2>/dev/null | head -5
 
       - name: Build Windows binary
         run: |
@@ -60,6 +61,8 @@ jobs:
         env:
           CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}/stdx
         run: |
+          which cjc cjpm
+          ls $CANGJIE_STDX_PATH/ 2>/dev/null | head -5
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
           mkdir -p dist
