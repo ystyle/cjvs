@@ -36,7 +36,10 @@ jobs:
 
       - name: Build Windows binary
         run: |
-          export CANGJIE_STDX_PATH="$HOME/.config/cjvs/stdx/1.1.0.1-windows/cangjie/lib/windows_x86_64_cjnative/static/stdx"
+          STDX_WIN="$HOME/.config/cjvs/stdx/1.1.0.1-windows"
+          PATH_WIN=$(find "${STDX_WIN}" -name "libstdx.a" 2>/dev/null | head -1 | xargs dirname)
+          echo "Windows stdx path: ${PATH_WIN}"
+          export CANGJIE_STDX_PATH="${PATH_WIN}"
           cjpm build --target x86_64-w64-mingw32
           cp ./target/x86_64-w64-mingw32/release/bin/main.exe ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
           zip -j dist/cjvs_windows_amd64.zip ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
@@ -61,8 +64,7 @@ jobs:
         env:
           CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}/stdx
         run: |
-          which cjc cjpm
-          ls $CANGJIE_STDX_PATH/ 2>/dev/null | head -5
+          brew install openssl 2>/dev/null || true
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
           mkdir -p dist
