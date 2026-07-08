@@ -9,15 +9,30 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
-      - uses: Zxilly/setup-cangjie@v3
-        with:
-          channel: sts
-          version: 1.1.0
-          components: stdx
+
+      - name: Install mingw toolchain
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64 zip
+
+      - name: Setup Cangjie with cjvs
+        run: |
+          set -e
+          curl -sL "https://github.com/ystyle/cjvs/releases/download/v0.4.0/cjvs_bootstrap_linux_amd64.zip" -o /tmp/cjvs.zip
+          unzip -o /tmp/cjvs.zip -d /tmp/cjvs-bin
+          chmod +x /tmp/cjvs-bin/cjvs
+          export PATH="/tmp/cjvs-bin:$PATH"
+          cjvs install 1.1.0
+          cjvs use 1.1.0
+          cjvs stdx install 1.1.0.1
+
+          CJVS_STORE="$HOME/.config/cjvs/store/1.1.0"
+          STDX_DIR="$HOME/.config/cjvs/stdx/1.1.0.1"
+          echo "CANGJIE_HOME=${CJVS_STORE}" >> $GITHUB_ENV
+          echo "CANGJIE_STDX_PATH=${STDX_DIR}/linux_x86_64_cjnative/static/stdx" >> $GITHUB_ENV
+          echo "${CJVS_STORE}/bin" >> $GITHUB_PATH
+          echo "${CJVS_STORE}/tools/bin" >> $GITHUB_PATH
+          echo "LD_LIBRARY_PATH=${CJVS_STORE}/runtime/lib/linux_x86_64_cjnative:${CJVS_STORE}/tools/lib:${CJVS_STORE}/third_party/llvm/lib" >> $GITHUB_ENV
 
       - name: Build Linux binary
-        env:
-          CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}
         run: |
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
@@ -55,7 +70,7 @@ jobs:
 
       - name: Build macOS binary
         env:
-          CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}
+          CANGJIE_STDX_PATH: "${{ env.CANGJIE_STDX_PATH_STATIC }}/linux_x86_64_cjnative/stdx"
         run: |
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
