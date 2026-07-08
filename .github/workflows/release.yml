@@ -5,11 +5,10 @@ on:
     types: [published]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
       - uses: Zxilly/setup-cangjie@v3
         with:
           channel: sts
@@ -29,8 +28,7 @@ jobs:
       - name: Install Windows stdx
         run: |
           curl -sL "https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v1.1.0.1/cangjie-stdx-windows-x64-1.1.0.1.zip" -o /tmp/stdx-win.zip
-          mkdir -p $HOME/.config/cjvs/cache
-          mkdir -p $HOME/.config/cjvs/stdx/1.1.0.1-windows
+          mkdir -p $HOME/.config/cjvs/cache $HOME/.config/cjvs/stdx/1.1.0.1-windows
           unzip -o /tmp/stdx-win.zip -d $HOME/.config/cjvs/stdx/1.1.0.1-windows
 
       - name: Build Windows binary
@@ -39,6 +37,29 @@ jobs:
           cjpm build --target x86_64-w64-mingw32
           cp ./target/x86_64-w64-mingw32/release/bin/main.exe ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
           zip -j dist/cjvs_windows_amd64.zip ./target/x86_64-w64-mingw32/release/bin/cjvs.exe
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload ${{ github.ref_name }} dist/* --repo ${{ github.repository }}
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Zxilly/setup-cangjie@v3
+        with:
+          channel: sts
+          version: 1.1.0
+          components: stdx
+
+      - name: Build macOS binary
+        run: |
+          cjpm build
+          cp ./target/release/bin/main ./target/release/bin/cjvs
+          mkdir -p dist
+          zip -j dist/cjvs_macos_aarch64.zip ./target/release/bin/cjvs
 
       - name: Upload release assets
         env:

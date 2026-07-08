@@ -10,16 +10,13 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
       - uses: Zxilly/setup-cangjie@v3
         with:
           channel: sts
           version: 1.1.0
           components: stdx
-
       - name: Build
         run: cjpm build
-
       - name: Test
         run: |
           ./target/release/bin/main --version
