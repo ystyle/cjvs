@@ -7,6 +7,8 @@ on:
 jobs:
   build-linux:
     runs-on: ubuntu-26.04
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: Zxilly/setup-cangjie@v3
@@ -52,6 +54,8 @@ jobs:
 
   build-macos:
     runs-on: macos-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: Zxilly/setup-cangjie@v3
