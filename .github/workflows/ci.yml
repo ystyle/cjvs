@@ -16,14 +16,9 @@ jobs:
           version: 1.1.0
           components: stdx
 
-      - name: Find stdx path
-        run: |
-          echo "STDX_STATIC=$CANGJIE_STDX_PATH_STATIC"
-          echo "STDX_DYNAMIC=$CANGJIE_STDX_PATH_DYNAMIC"
-          find "$CANGJIE_STDX_PATH_STATIC" -name "*.a" 2>/dev/null | head -10
-          find "$CANGJIE_STDX_PATH_STATIC" -name "libstdx*" 2>/dev/null | head -10
-
       - name: Build
+        env:
+          CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}/stdx
         run: cjpm build
       - name: Test
         run: |
