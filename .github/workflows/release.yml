@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v4
       - uses: Zxilly/setup-cangjie@v3
@@ -14,9 +14,6 @@ jobs:
           channel: sts
           version: 1.1.0
           components: stdx
-
-      - name: Install mingw toolchain
-        run: sudo apt-get update && sudo apt-get install -y mingw-w64 zip
 
       - name: Build Linux binary
         env:
