@@ -19,6 +19,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y mingw-w64 zip
 
       - name: Build Linux binary
+        env:
+          CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}
         run: |
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
@@ -55,6 +57,8 @@ jobs:
           components: stdx
 
       - name: Build macOS binary
+        env:
+          CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}
         run: |
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
