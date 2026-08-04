@@ -1,5 +1,6 @@
 version = 0
 
 [requires]
-  "ystyle::zip" = {version = "1.0.5"}
   cjpminfo = {version = "1.2.0"}
+  "ystyle::tar" = {version = "1.1.0"}
+  "ystyle::zip" = {version = "1.0.5"}
