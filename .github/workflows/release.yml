@@ -71,7 +71,9 @@ jobs:
           CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}/stdx
         run: |
           VERSION="${{ github.ref_name }}"
-          brew install openssl 2>/dev/null || true
+          brew install openssl@3
+          export DYLD_LIBRARY_PATH="$(brew --prefix openssl@3)/lib:$DYLD_LIBRARY_PATH"
+          export LIBRARY_PATH="$(brew --prefix openssl@3)/lib:$LIBRARY_PATH"
           cjpm build
           cp ./target/release/bin/main ./target/release/bin/cjvs
           mkdir -p dist
