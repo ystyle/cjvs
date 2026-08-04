@@ -1,14 +1,15 @@
 package cjvs.tools
 
-import std.fs.{Path, Directory, exists}
+import std.fs.{Path, Directory, File, OpenMode, exists}
 import std.collection.{ArrayList, HashMap}
-import std.process.{executeWithOutput}
 import std.env.{getVariable, getCommand}
 import stdx.encoding.json.stream.*
 import stdx.net.http.{ClientBuilder, Client}
 import stdx.net.tls.*
 import stdx.net.tls.common.*
+import stdx.compress.zlib.{DecompressInputStream, WrapType}
 import ystyle::zip.*
+import ystyle::tar.Reader as TarReader
 import cjvs.model.Version
 import cjvs.config.defaultConfig
 
@@ -131,13 +132,12 @@ public func uncompress(ext: String, source: String, target: String): Unit {
             reader.extractAll(target)
             reader.close()
         case "tar.gz" =>
-            let (status, out, outerr) = executeWithOutput("tar", ["-zxf", source, "-C", target])
-            if (status != 0) {
-                println("Install failed: ")
-                println(String.fromUtf8(out))
-                println(String.fromUtf8(outerr))
-                return
-            }
+            let inFile = File(source, OpenMode.Read)
+            let gzReader = DecompressInputStream(inFile, wrap: WrapType.GzipFormat)
+            let reader = TarReader(gzReader)
+            reader.extractAll(target)
+            gzReader.close()
+            inFile.close()
         case _ => println("unsupported file format: ${ext}")
     }
 }
