@@ -1,3 +1,6 @@
+
+</think>
+
 ### cjvs
 仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台。linux 解压 tar.gz 格式依赖系统 tar 命令
 
@@ -24,7 +27,7 @@
 1. Archlinux
   - 如果使用 `Archlinux` 可以使用 `paru -S cjvs-bin` 安装
   >本仓库 Release 里的 linux-amd64 版本是在 archlinux 构建的，在较老的 linux 发行版可能不支持。
-2. Widnows, Linux, MacOS 使用cjpm安装
+2. Windows, Linux, MacOS 使用cjpm安装
   - 需要安装 1.1.0+ 版本的 `cangjie编译器` 和 `stdx`，然后设置环境变量: `export CANGJIE_STDX_PATH=path_to_stdx/1.1.0/`
   - 执行`cjpm install cjvs-0.3.6`
 
