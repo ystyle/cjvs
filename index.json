@@ -632,5 +632,115 @@
     "arch": "x86_64",
     "target": "android",
     "sha256sum": "9a6990f1ebfce699534e47e7b99c7764b7f9f3a487fcf0879d701c8854b7584b"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-1.2.0.zip&objectKey=6ab1eafae4bd101f57762f5e",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.2.0",
+    "os": "windows",
+    "arch": "x86_64",
+    "target": "native",
+    "sha256sum": "7bd5088ad56fb03c1214e73ea076de5ac08580cc419a8cbd46a524ee1ca250bf"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-android-1.2.0.zip&objectKey=6ab1eb0be4bd101f57762f60",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.2.0-android",
+    "os": "windows",
+    "arch": "x86_64",
+    "target": "android",
+    "sha256sum": "ffb3d8b39e6ace9aba014420b8f3a096178ac8587528d581535eef002c34b252"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-ohos-1.2.0.zip&objectKey=6ab1eb0be4bd101f57762f5f",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.2.0-ohos",
+    "os": "windows",
+    "arch": "x86_64",
+    "target": "ohos",
+    "sha256sum": "a3688f778b925298e059e7a830b76e74d2b6239b235edfb62333d5feba2e9869"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-1.2.0.tar.gz&objectKey=6ab1e6451320215435b23d52",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "native",
+    "sha256sum": "de88d6ba2185c94979e0ab2fe8ac1d81535dfdff3fcb51fbba71e4b99d851f97"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-ios-1.2.0.tar.gz&objectKey=6ab1ea52e4bd101f57762f5a",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0-ios",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "ios",
+    "sha256sum": "24070808ee0a1c8f68b6411fd0a48fb9bc887abb624aee53a162442e14770e45"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-android-1.2.0.tar.gz&objectKey=6ab1ea4ee4bd101f57762f59",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0-android",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "android",
+    "sha256sum": "cfee0b72f57e2b37adf408be9ff836b31e50c686c8e4d57a396b751f2107de9b"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-ohos-1.2.0.tar.gz&objectKey=6ab1e64e1320215435b23d53",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0-ohos",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "ohos",
+    "sha256sum": "2ae902632bb327ed3c020f9dfe8e3f84c9f9f2d65d25eca4f3f43ebead8f6dbf"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-1.2.0.tar.gz&objectKey=6ab1e26eece1f87ff5befa73",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0",
+    "os": "linux",
+    "arch": "x86_64",
+    "target": "native",
+    "sha256sum": "8c5fd944cd9cc51ee63d4a240e3ecc4f540345dae1468e8b47c927ecf2ba998f"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-aarch64-1.2.0.tar.gz&objectKey=6ab1e26eece1f87ff5befa72",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0",
+    "os": "linux",
+    "arch": "aarch64",
+    "target": "native",
+    "sha256sum": "40e3962472d6d1b181e685198b193b904a385ac8dbbdff8aa9c52c4bb6f6e0f1"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-ohos-1.2.0.tar.gz&objectKey=6ab1e9f0e4bd101f57762f58",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0-ohos",
+    "os": "linux",
+    "arch": "x86_64",
+    "target": "ohos",
+    "sha256sum": "3b52924ea5d4c75b882dd467c1cfeb4fca6fb82397851597fa65590dbea579b7"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-android-1.2.0.tar.gz&objectKey=6ab1e336ece1f87ff5befa74",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.2.0-android",
+    "os": "linux",
+    "arch": "x86_64",
+    "target": "android",
+    "sha256sum": "60235b0c0adc0df17666d0afe6d1e7e59a9b4df5a9e491f39b017490f8e035e9"
   }
 ]
