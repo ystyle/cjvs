@@ -18,8 +18,9 @@ public func genenv(args: Array<String>): Unit {
 
 // Unix-like 系统（Linux/macOS）的通用环境生成函数
 func genenvUnix(args: Array<String>, os: String): Unit {
-    if (args.size < 2) {
-        println("cjvs env :shell")
+    // 选项必须写在 shell 之后，否则会当成 shell 名
+    if (args.size < 2 || args[1].startsWith("-")) {
+        printEnvUsage("bash, zsh, fish, nushell, elvish", true)
         return
     }
 
@@ -43,8 +44,8 @@ func genenvUnix(args: Array<String>, os: String): Unit {
 
 @When[os == "Windows"]
 public func genenv(args: Array<String>): Unit {
-    if (args.size < 2) {
-        println("cjvs env :shell")
+    if (args.size < 2 || args[1].startsWith("-")) {
+        printEnvUsage("powershell, nushell, fish, elvish", false)
         return
     }
 
@@ -64,6 +65,23 @@ public func genenv(args: Array<String>): Unit {
 
     let shell = args[1]
     println(renderEnvScript(shell, shellpath, stdxPath, true, "windows"))
+}
+
+// 未指定 shell 时打印用法；选项写在 shell 之后
+// supportsLdLibraryPath: Windows 不使用 LD_LIBRARY_PATH，故不列出该选项
+func printEnvUsage(shells: String, supportsLdLibraryPath: Bool): Unit {
+    println("Usage: cjvs env <shell> [options]")
+    println("       eg: cjvs env bash")
+    println("           cjvs env zsh")
+    println("")
+    println("Available shells: ${shells}")
+    println("")
+    println("Options:")
+    if (supportsLdLibraryPath) {
+        println("  -no-ld-library-path  Do not export LD_LIBRARY_PATH")
+    }
+    println("  -stdx                Export CANGJIE_STDX_PATH through a symlink")
+    println("                       (cjpm cannot read symlinks yet, prefer 'cjvs stdx-env')")
 }
 
 // 创建多 shell 符号链接路径

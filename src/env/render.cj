@@ -42,6 +42,7 @@ func renderBashZsh(shellpath: String, stdxPath: String, appendLdLibraryPath: Boo
         let libPaths = buildRuntimeLibPaths(homeVar, os, archExpr)
         "export LD_LIBRARY_PATH=${joinStrings(libPaths, ":")}:\$LD_LIBRARY_PATH"
     } else {
+        // 只跳过自动导出；下面的 cjenv 函数仍会在被调用时设置 LD_LIBRARY_PATH
         ""
     }
     

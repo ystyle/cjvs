@@ -33,12 +33,28 @@ task build
 
 ### 测试
 
-项目当前无自动化测试。测试方式为手动运行验证：
+单元测试为仓颉单元测试框架，测试文件与被测代码同包、以 `_test.cj` 结尾（如 `src/env/render_test.cj`）。
+改动 `env` 渲染逻辑（`src/env/render.cj`）时必须同步维护 `src/env/render_test.cj` 里的契约用例。
 
 ```bash
-# 构建后手动测试
-./target/release/bin/cjvs --help
-./target/release/bin/cjvs ls-remote
+# 需先加载 cjvs 环境
+eval "$(cjvs env zsh)" && eval "$(cjvs stdx-env zsh)"
+
+# 运行全部测试
+cjpm test -j 16 --no-progress
+
+# 运行指定测试（--filter 是通配符，不是正则）
+cjpm test -j 16 --no-progress --show-all-output --filter '*EnvRenderTest*'
+
+# 只编译测试
+cjpm test --no-run
+```
+
+```bash
+# 构建后手动验证
+./target/release/bin/main --help
+./target/release/bin/main env
+./target/release/bin/main env bash -no-ld-library-path
 ```
 
 ### 包管理
@@ -282,6 +298,7 @@ cjvs/
 │   ├── env/               # env 子包：环境变量生成
 │   │   ├── command.cj     # 命令入口和符号链接管理
 │   │   ├── render.cj      # Shell 渲染方法（bash/zsh/fish/nushell/elvish/powershell）
+│   │   ├── render_test.cj # env 渲染的单元测试
 │   │   └── paths.cj       # 路径生成（条件编译处理平台差异）
 │   ├── stdx/              # stdx 子命令实现
 │   │   ├── command.cj     # 命令分发
