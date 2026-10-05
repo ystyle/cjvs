@@ -58,6 +58,9 @@
   eval (cjvs.exe env elvish | slurp)
   ```
 
+  > 需要自行管理库搜索路径时，给 `env` 加上 `-no-ld-library-path`（如 `eval "$(cjvs env bash -no-ld-library-path)"`），
+  > 选项含义与完整用法见 [env 命令参数](#env-命令参数)；`cjvs env` 或 `cjvs --help` 也会打印用法。
+
 
 #### Windows
 - 编译安装好后，把以下文件放到一个目录，并添加到Path环境变量
@@ -96,16 +99,26 @@ Usage: cjvs [options...]
                       cjvs rls sts --beta                          # List STS versions with beta
   install, i      Install a new Cangjie version.
                     eg:
-                      cjvs install 0.53.13 # install online
+                      cjvs install 0.53.13                         # install online
                       cjvs install 0.59.6 ~/Downloads/cangjie-0.59.6-linux_x64.tar.gz # install a local version
   switch, use     Switch to use the specified version.
   default         Set the default Cangjie version.
   remove, rm      Remove a specific version.
   env             Print and set up required environment variables for cjvs
+                    eg:
+                      cjvs env zsh                                 # Generate env for zsh
+                      cjvs env bash                                # Generate env for bash
+                      cjvs env bash -no-ld-library-path            # Generate env without LD_LIBRARY_PATH
+                      cjvs env nushell | save -f ~/.cjvs.nu
+                    options:
+                      -no-ld-library-path  Do not export LD_LIBRARY_PATH (Linux/macOS only)
+                      -stdx                Export CANGJIE_STDX_PATH through a symlink;
+                                           cjpm cannot read symlinks yet, use 'cjvs stdx-env'
   stdx            Manage stdx (extension library) versions.
                     eg:
-                      cjvs stdx list                              # List installed stdx versions
-                      cjvs stdx install 1.0.0 ~/Downloads/stdx.zip # Install stdx from local zip
+                      cjvs stdx list                               # List installed stdx versions
+                      cjvs stdx install 1.0.0                      # Install stdx (auto-download)
+                      cjvs stdx install 1.0.0 ~/Downloads/stdx.zip # Install from local zip
                       cjvs stdx use 1.0.0                          # Switch stdx version
                       cjvs stdx use 1.0.0 static                   # Switch with static library
                       cjvs stdx default 1.0.0                      # Set default stdx version
@@ -301,14 +314,26 @@ eval (cjvs env elvish -stdx | slurp)
 
 ### env 命令参数
 
-`cjvs env` 命令支持以下参数：
+`cjvs env` 生成的是交给当前 shell 执行的脚本（`eval "$(cjvs env bash)"` 等），**选项写在 shell 之后**：
 
 ```shell
 cjvs env <shell> [options]
 
 选项:
-  -no-ld-library-path 不设置 LD_LIBRARY_PATH 环境变量
+  -no-ld-library-path  不自动导出 LD_LIBRARY_PATH
+  -stdx                通过符号链接导出 CANGJIE_STDX_PATH（当前不可用，见下）
 ```
+
+- **默认行为**：把当前 `$CANGJIE_HOME` 的运行时库路径追加到已有 `LD_LIBRARY_PATH` 之前，依次为
+  `runtime/lib/<os>_$(uname -m)_llvm`、`runtime/lib/<os>_$(uname -m)_cjnative`、`lib/<os>_x86_64_jet`、
+  `tools/lib`、`debugger/third_party/lldb/lib`；同时设置 `CJVS_MULTISHELL_PATH`、`CANGJIE_HOME` 与 `PATH`。
+- **`-no-ld-library-path`**：只跳过上面那一步自动导出，其余环境变量照常设置。
+  适合自己管理库搜索路径的场景（系统里已有同名的仓颉运行时库、由容器镜像统一注入、或改用 `RPATH` 等）。
+  注意脚本里仍会定义 `cjenv` 函数（**手动执行才生效**），要完全不碰 `LD_LIBRARY_PATH` 就不要调用它。
+- **`-stdx`**：用符号链接导出的 `CANGJIE_STDX_PATH` 当前不被 cjpm 支持，请改用 `cjvs stdx-env <shell>`。
+- 支持的 shell：Unix 为 bash、zsh、fish、nushell、elvish，Windows 为 powershell、nushell、fish、elvish。
+  Windows 不使用 `LD_LIBRARY_PATH`，因此没有 `-no-ld-library-path`。
+- 不写 shell、或把选项写在 shell 之前（如 `cjvs env -no-ld-library-path bash`）会打印用法，选项不会生效。
 
 #### 使用示例
 
@@ -316,8 +341,11 @@ cjvs env <shell> [options]
 # 基础用法
 eval "$(cjvs env bash)"
 
-# 不设置 LD_LIBRARY_PATH（某些情况下可能需要）
+# 不自动设置 LD_LIBRARY_PATH（某些情况下可能需要）
 eval "$(cjvs env bash -no-ld-library-path)"
+
+# 查看可用选项
+cjvs env
 ```
 
 #### cjenv 快捷函数
@@ -330,6 +358,8 @@ cjenv
 ```
 
 这会更新 `LD_LIBRARY_PATH` 指向当前 `$CANGJIE_HOME` 的运行时库路径。
+
+该函数**调用时才生效**，所以启用 `-no-ld-library-path` 时它不会在加载阶段改动 `LD_LIBRARY_PATH`；不需要它就不要调用。
 
 ### 许可证
 [MIT License](LICENSE)
