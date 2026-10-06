@@ -33,8 +33,9 @@ task build
 
 ### 测试
 
-单元测试为仓颉单元测试框架，测试文件与被测代码同包、以 `_test.cj` 结尾（如 `src/env/render_test.cj`）。
-改动 `env` 渲染逻辑（`src/env/render.cj`）时必须同步维护 `src/env/render_test.cj` 里的契约用例。
+单元测试为仓颉单元测试框架，测试文件与被测代码同包、以 `_test.cj` 结尾（如 `src/env/render_test.cj`、`src/stdx/tools_test.cj`）。
+改动 `env` 渲染逻辑（`src/env/render.cj`）时必须同步维护 `src/env/render_test.cj` 里的契约用例；
+改动 stdx 落盘结构探测（`src/stdx/tools.cj` 的 `hasStdxLibType`）时同步维护 `src/stdx/tools_test.cj`。
 
 ```bash
 # 需先加载 cjvs 环境
@@ -304,6 +305,8 @@ cjvs/
 │   │   ├── command.cj     # 命令分发
 │   │   ├── stdx_install.cj
 │   │   ├── stdx_switch.cj
+│   │   ├── tools.cj       # stdx 路径与落盘结构探测
+│   │   ├── tools_test.cj  # stdx 落盘结构探测的单元测试
 │   │   └── stdx_env.cj
 │   ├── tools/
 │   │   └── tools.cj       # 工具函数
