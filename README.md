@@ -2,6 +2,7 @@
 仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台。解压内建（zip 用 `ystyle::zip`，tar.gz 用 `ystyle::tar` + zlib 流式解压），不依赖系统 `tar` 命令
 
 更新日志:
+> - 2026-10-06 v0.4.2 修复 `cjvs stdx ls` 不显示已安装库类型（新老目录结构都识别）；`cjvs env` 与 `cjvs stdx` 用法输出补全参数说明与示例；README 补「配置文件与索引源」「stdx 在线安装」「交叉编译/异平台 SDK」等章节
 > - 2026-08-04 v0.4.1 解压改为内建（`ystyle::tar` + zlib 流式解压），不再依赖系统 `tar` 命令；发布包名统一为 `cjvs_v{version}_{platform}.zip`；修复 macOS 构建
 > - 2026-07-08 v0.4.0 `cjvs stdx install <version>` 支持在线安装（省略 zip 时从 atomgit 自动下载）；`install`/`stdx` 等命令无需先加载 cjvs 环境即可执行
 > - 2026-04-26 v0.3.9 新增 `cjvs rls --beta` 分组显示 beta 版本；版本索引纳入交叉编译/异平台版本（`1.1.0-android`/`-ohos`/`-ios`）；env 模块重构（`cjenv` 函数、`cjvs env -no-ld-library-path`/`-stdx` 选项）

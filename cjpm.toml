@@ -6,14 +6,14 @@
 [package]
   name = "cjvs"
   description = "仓颉编译器版本切换工具"
-  version = "0.4.1"
+  version = "0.4.2"
   cjc-version = "1.1.0"
   compile-option = "-O2 --static -Woff driver-arg -Woff unused"
   link-option = ""
   output-type = "executable"
   src-dir = "src"
   target-dir = ""
-  include =["src"]
+  include = ["/src", "/LICENSE"]
   license = ["MIT"]
   authors = ["ystyle"]
   repository = "https://atomgit.com/OpenCangjieCommunity/cjvs"

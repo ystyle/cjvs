@@ -21,6 +21,11 @@ jobs:
           CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}/stdx
         run: cjpm build
       - name: Test
+        env:
+          CANGJIE_STDX_PATH: ${{ env.CANGJIE_STDX_PATH_STATIC }}/stdx
         run: |
+          cjpm test -j 16 --no-progress
           ./target/release/bin/main --version
           ./target/release/bin/main env bash | head -5
+          ./target/release/bin/main env
+          ./target/release/bin/main stdx
