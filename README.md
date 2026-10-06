@@ -343,13 +343,13 @@ $ cjvs stdx install 1.1.3.1
 # 安装 stdx（从本地 zip 文件）
 $ cjvs stdx install 1.1.3.1 ~/Downloads/stdx-1.1.3.1.zip
 
-# 列出已安装的 stdx 版本（* 表示当前使用的版本）
+# 列出已安装的 stdx 版本（* 表示当前使用的版本，括号内是已安装的库类型）
 $ cjvs stdx ls
 Installed stdx versions (* = current):
-	  1.0.4
-	  1.1.0
-	* 1.1.3.1
-	  1.2.0.1
+	  1.0.4 (dynamic, static)
+	  1.1.0 (dynamic, static)
+	* 1.1.3.1 (dynamic, static)
+	  1.2.0.1 (dynamic, static)
 
 # 设置默认版本为 1.1.3.1，使用动态库
 $ cjvs stdx default 1.1.3.1

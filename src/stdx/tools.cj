@@ -5,7 +5,7 @@ import std.collection.{ArrayList, HashMap}
 import std.env.getVariable
 import cjvs.config.defaultConfig
 import cjvs.model.StdxVersion
-import cjvs.tools.{getHttpClient, CurrentOS, arch, getStdxPath}
+import cjvs.tools.{getHttpClient, CurrentOS, arch, getStdxPath, listdir}
 import stdx.encoding.json.stream.*
 
 // ==================== stdx 工具函数 ====================
@@ -53,6 +53,22 @@ func isStdxInstalled(version: String): Bool {
     let dynamicPath = getStdxPath(version, "dynamic")
     let staticPath = getStdxPath(version, "static")
     return exists(Path(dynamicPath)) || exists(Path(staticPath))
+}
+
+// 判断某个 stdx 版本目录下是否存在指定库类型（static / dynamic）
+// 兼容两种落盘结构：
+//   <version>/<os>_<arch>_<runtime>/<libType>/stdx  （新版 _cjnative、旧版 _llvm）
+//   <version>/<libType>/stdx
+func hasStdxLibType(versionDir: Path, libType: String): Bool {
+    if (exists(versionDir.join(libType).join("stdx"))) {
+        return true
+    }
+    for (dir in listdir(versionDir)) {
+        if (exists(dir.join(libType).join("stdx"))) {
+            return true
+        }
+    }
+    return false
 }
 
 // 获取多 shell 环境下的 stdx 符号链接路径

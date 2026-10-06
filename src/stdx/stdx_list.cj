@@ -84,10 +84,8 @@ func stdxList(_: Array<String>) {
         }
 
         // 检查安装的库类型
-        let dynamicPath = versionPath.join("dynamic").join("stdx")
-        let staticPath = versionPath.join("static").join("stdx")
-        let hasDynamic = exists(dynamicPath)
-        let hasStatic = exists(staticPath)
+        let hasDynamic = hasStdxLibType(versionPath, "dynamic")
+        let hasStatic = hasStdxLibType(versionPath, "static")
 
         let types = if (hasDynamic && hasStatic) {
             "(dynamic, static)"
@@ -99,6 +97,10 @@ func stdxList(_: Array<String>) {
             ""
         }
 
-        println("${version} ${types}")
+        if (types.size > 0) {
+            println("${version} ${types}")
+        } else {
+            println(version)
+        }
     }
 }
