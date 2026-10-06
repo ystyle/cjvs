@@ -9,7 +9,12 @@ import cjvs.config.defaultConfig
 func stdxInstall(args: Array<String>) {
     if (args.size < 3) {
         println("Usage: cjvs stdx install <version> [zip-file]")
-        println("  zip-file: local zip file (optional, auto-download from atomgit if omitted)")
+        println("  <version>: stdx version to install")
+        println("  zip-file : local zip file (optional)")
+        println("             when omitted, downloads cangjie-stdx-<os>-<arch>-<version>.zip from atomgit")
+        println("")
+        println("Available versions: https://atomgit.com/Cangjie/cangjie_stdx/releases")
+        println("  (the online list API needs a token, so cjvs does not list remote versions)")
         return
     }
 
