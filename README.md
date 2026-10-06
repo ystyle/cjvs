@@ -125,6 +125,9 @@ Usage: cjvs [options...]
                       cjvs stdx default 1.0.0 dynamic              # Set default with dynamic library
                       cjvs stdx config static                      # Set default library type
                       cjvs stdx remove 1.0.0                       # Remove stdx version
+                    note:
+                      available versions: https://atomgit.com/Cangjie/cangjie_stdx/releases
+                      (the online list API needs a token, so cjvs does not list remote versions)
   stdx-env        Generate stdx environment variables for current shell.
                     eg:
                       cjvs stdx-env zsh                            # Generate env for zsh
@@ -223,22 +226,51 @@ stdx 是仓颉的扩展库，包含预编译的静态库和动态库。cjvs 提�
 
 ```shell
 $ cjvs stdx
-Usage: cjvs stdx <list|install|use|default|config|remove> [args]
+Usage: cjvs stdx <list|install|use|default|config|remove|env> [args]
+  list, ls                            List installed stdx versions.
+  install, i <version> [zip-file]     Install stdx; without zip-file it downloads from atomgit.
+  use <version> [static|dynamic]      Switch to use the specified stdx version.
+  default <version> [static|dynamic]  Set the default stdx version.
+  config <static|dynamic>             Set default library type.
+  remove, rm <version>                Remove a specific stdx version.
+  env <shell>                         Print CANGJIE_STDX_PATH for the current shell.
 
-子命令:
-  list, ls              列出已安装的 stdx 版本
-  install, i <version> <zip-file>  安装 stdx 版本（从本地 zip 文件）
-  use <version> [static|dynamic]   切换当前使用的 stdx 版本
-  default <version> [static|dynamic] 设置默认 stdx 版本
-  config <static|dynamic>          设置默认库类型
-  remove, rm <version>             删除 stdx 版本
+  Available versions: https://atomgit.com/Cangjie/cangjie_stdx/releases
+  (the online list API needs a token, so cjvs does not list remote versions)
 ```
+
+- `cjvs stdx list` 列出的是**已安装**的版本，不是可用版本（可用版本见下）。
+- `cjvs stdx use/default <version> [static|dynamic]` 同时决定版本与库类型；`config <static|dynamic>` 只改库类型。
+
+#### 在线安装（直接安装）
+
+`cjvs stdx install` 省略 `zip-file` 时会按当前平台从 atomgit 下载并安装，
+文件名规则为 `cangjie-stdx-<os>-<arch>-<version>.zip`（`<os>`：`linux` / `mac` / `windows`；
+`<arch>`：`x64` / `aarch64`）：
+
+```shell
+# 在线直接安装（自动下载当前平台制品）
+$ cjvs stdx install 1.1.3.1
+
+# 本地 zip 安装（离线 / 内测版本，目录结构需与官方制品一致）
+$ cjvs stdx install 1.1.3.1 ~/Downloads/stdx-1.1.3.1.zip
+```
+
+- 第一个安装的 stdx 版本会自动设为默认版本；已安装的版本会直接跳过（`stdx ... is already installed.`）。
+- 下载地址可直接拼给浏览器 / curl：
+  `https://atomgit.com/Cangjie/cangjie_stdx/releases/download/v<version>/cangjie-stdx-<os>-<arch>-<version>.zip`
+- ⚠️ **可用版本列表请到 [atomgit 的 cangjie_stdx releases 页面](https://atomgit.com/Cangjie/cangjie_stdx/releases) 查看**：
+  在线列举版本需要 token，cjvs 不请求该接口，因此没有「列远程版本」的子命令，
+  请把 atomgit 上的版本号直接传给 `cjvs stdx install <version>`。
 
 #### stdx 使用示例
 
 ```shell
+# 安装 stdx（在线下载）
+$ cjvs stdx install 1.1.3.1
+
 # 安装 stdx（从本地 zip 文件）
-$ cjvs stdx install 1.0.0 ~/Downloads/stdx-1.0.0.zip
+$ cjvs stdx install 1.1.3.1 ~/Downloads/stdx-1.1.3.1.zip
 
 # 列出已安装的 stdx 版本
 $ cjvs stdx ls

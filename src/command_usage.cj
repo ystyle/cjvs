@@ -38,6 +38,9 @@ Usage: cjvs [options...]
                       cjvs stdx default 1.0.0 dynamic              # Set default with dynamic library
                       cjvs stdx config static                      # Set default library type
                       cjvs stdx remove 1.0.0                       # Remove stdx version
+                    note:
+                      available versions: https://atomgit.com/Cangjie/cangjie_stdx/releases
+                      (the online list API needs a token, so cjvs does not list remote versions)
   stdx-env        Generate stdx environment variables for current shell.
                     eg:
                       cjvs stdx-env zsh                            # Generate env for zsh
