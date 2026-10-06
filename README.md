@@ -1,8 +1,11 @@
 ### cjvs
-仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台。linux 解压 tar.gz 格式依赖系统 tar 命令
+仓颉版本管理工具，类似nvm，目前支持linux、macos、windows平台。解压内建（zip 用 `ystyle::zip`，tar.gz 用 `ystyle::tar` + zlib 流式解压），不依赖系统 `tar` 命令
 
 更新日志:
-> - 2026-03-24 v0.3.6 升级到 Cagnjie 1.1.0, 现在可以直接使用`cjpm install cjvs-0.3.6` 来下载
+> - 2026-08-04 v0.4.1 解压改为内建（`ystyle::tar` + zlib 流式解压），不再依赖系统 `tar` 命令；发布包名统一为 `cjvs_v{version}_{platform}.zip`；修复 macOS 构建
+> - 2026-07-08 v0.4.0 `cjvs stdx install <version>` 支持在线安装（省略 zip 时从 atomgit 自动下载）；`install`/`stdx` 等命令无需先加载 cjvs 环境即可执行
+> - 2026-04-26 v0.3.9 新增 `cjvs rls --beta` 分组显示 beta 版本；版本索引纳入交叉编译/异平台版本（`1.1.0-android`/`-ohos`/`-ios`）；env 模块重构（`cjenv` 函数、`cjvs env -no-ld-library-path`/`-stdx` 选项）
+> - 2026-03-24 v0.3.6 升级到 Cangjie 1.1.0, 现在可以直接使用`cjpm install cjvs-0.3.6` 来下载
 > - 2025-12-30 v0.3.0 升级到 Cangjie 1.0.0，新增 stdx 管理功能，支持静态/动态库切换，支持 macOS 平台
 > - 2025-08-24 windows 也能使用了， 并新增了`elvish`和`nushell`的支持
 > - 2025-07-04 因为添加了不同的shell进程，可切换不同版本的功能，当前widnows 版本暂时不可用
@@ -10,14 +13,14 @@
 
 
 ### 功能
-- 列出可在线安装的官方发布版本
-- 在线安装官方发布版本
+- 列出可在线安装的官方发布版本（`cjvs rls`，支持 `sts`/`lts` 频道过滤与 `--beta`）
+- 在线安装官方发布版本，包含交叉编译/异平台 SDK（版本号带 `-android`/`-ohos`/`-ios` 后缀）
 - 离线安装zip/tar.gz版本(需要按官方的目录结构，可离线安装内测版本)
 - 列出已安装的版本
 - 在每个shell/或者终端模拟器页签中切换并使用不同的仓颉版本
 - 设置默认的仓颉版本
-- 删除cjvs安装的版本
-- **管理 stdx 扩展库**：安装、切换、删除 stdx 版本，支持静态/动态库切换
+- 删除cjvs安装的版本（正在使用的版本会拒绝删除）
+- **管理 stdx 扩展库**：在线安装（atomgit 自动下载）或本地 zip 安装，切换、删除 stdx 版本，支持静态/动态库切换
 - **多 Shell 支持**：bash、zsh、fish、nushell、elvish、powershell
 
 ### 安装
@@ -87,6 +90,36 @@ if ([Security.Principal.WindowsPrincipal]::new(
 - 如果还提示需要管理员权限， 在【secpol.msc → 本地策略 → 用户权限分配 → 创建符号链接 】添加当前登录用户，再重启系统试试。  
 - 如果都不行，就只能回退到上小节，只在管理员会话里加载使用了。
 
+### 配置文件与索引源
+
+首次运行时 cjvs 会自动创建配置文件，保存默认版本、stdx 设置与版本索引地址：
+
+| 平台 | 配置文件位置 |
+|---|---|
+| Linux / macOS | `~/.config/cjvs/config.json` |
+| Windows | `cjvs.exe` 所在目录的 `config.json` |
+
+```json
+{
+    "default": "1.1.3",
+    "stdxDefault": "1.1.3.1",
+    "stdxType": "static",
+    "index": "https://dll.ystyle.top/images/cjvs-index.json"
+}
+```
+
+- `default` / `stdxDefault` / `stdxType` 分别对应 `cjvs default`、`cjvs stdx default`、`cjvs stdx config` 写入的内容。
+- **`index` 是版本索引地址，可换成自建或镜像源**（`cjvs rls` 与 `cjvs install` 都走它）；
+  索引是版本条目数组，每条含 `url`/`ext`/`version`/`os`/`arch`/`channel`，样例见仓库根目录的
+  [`config-sample.json`](config-sample.json)（配置样例）与 [`index.json`](index.json)（索引格式）。
+- 版本与 stdx 的存放位置固定在配置目录下（`store/`、`stdx/`、`cache/`），不能由配置文件指定。
+- 走内网/自签证书的索引源时，可临时用 `NO_VERIFY_SSL=YES` 跳过 TLS 证书校验
+  （Windows 平台固定不校验；其它平台默认校验）。
+- 只有 `switch`（切换当前 shell 使用的版本）要求该 shell 已加载 cjvs 环境；
+  `install`、`stdx`、`list`、`rls` 等在未加载环境的 shell 里也能直接执行
+  （此时 `cjvs ls` 不会标出当前正在使用的版本）。
+- 删除正在被当前 shell 使用的版本会被拒绝，所以 `remove` 也需要在对应 shell 里执行才有这层保护。
+
 ### 使用
 ```shell
 $ cjvs
@@ -96,10 +129,12 @@ Usage: cjvs [options...]
                     eg:
                       cjvs rls                                     # List all versions
                       cjvs rls sts                                 # List STS versions only
+                      cjvs rls lts                                 # List LTS versions only
                       cjvs rls sts --beta                          # List STS versions with beta
   install, i      Install a new Cangjie version.
                     eg:
                       cjvs install 0.53.13                         # install online
+                      cjvs install 1.2.0-ohos                      # install a cross-compile SDK
                       cjvs install 0.59.6 ~/Downloads/cangjie-0.59.6-linux_x64.tar.gz # install a local version
   switch, use     Switch to use the specified version.
   default         Set the default Cangjie version.
@@ -139,47 +174,75 @@ GLOBAL OPTIONS:
 ```
 
 示例
-- 显示可用STS版本
+- 显示可用版本（`sts` / `lts` 两个频道，用 `cjvs rls sts` / `cjvs rls lts` 可只看其中一个）
   ```shell
-  $ cjvs rls            
+  $ cjvs rls sts
   Channel: sts
-        0.53.13
-        0.53.18
-        1.1.0
-        1.1.0-android
-        1.1.0-ohos
+  	0.53.13
+  	0.53.18
+  	1.1.0
+  	1.1.0-android
+  	1.1.0-ohos
+  	1.1.3
+  	1.1.3-android
+  	1.1.3-ohos
+  	1.2.0
+  	1.2.0-android
+  	1.2.0-ohos
+
+  $ cjvs rls lts
+  Channel: lts
+  	1.0.0
+  	1.0.1
+  	1.0.3
+  	1.0.4
+  	1.0.5
   ```
-- 显示可用STS版本（含 beta）
+  > 输出随索引与平台变化（如 `-ios` 只在 macOS 上出现），按当前实际输出为准。
+- 显示 STS 版本（含 beta，`--beta` 把 beta 单独分组列在稳定版之后）
   ```shell
   $ cjvs rls sts --beta
   Channel: sts
-        0.53.13
-        0.53.18
-        1.1.0
-        1.1.0-android
-        1.1.0-ohos
-        beta:
-                1.1.0-beta.23
-                1.1.0-beta.24
-                1.1.0-beta.25
+  	0.53.13
+  	0.53.18
+  	1.1.0
+  	1.1.0-android
+  	1.1.0-ohos
+  	1.1.3
+  	1.1.3-android
+  	1.1.3-ohos
+  	1.2.0
+  	1.2.0-android
+  	1.2.0-ohos
+  	beta:
+  		1.1.0-beta.23
+  		1.1.0-beta.24
+  		1.1.0-beta.25
   ```
-
 - 在线安装版本，第一次安装的版本会被设置为默认版本
   ```shell
   $ cjvs install 0.53.13
   installing 0.53.13...
-  installed.
-  0.53.13 is set as default.
+  install success.
+  0.53.13 is set as default version.
   ```
+  已安装的版本会提示 `already installed <version>`；索引里查不到的版本提示 `remote version: <version> is not found`。
+- 安装交叉编译/异平台 SDK：版本号直接带平台后缀，用法与普通版本完全相同
+  ```shell
+  $ cjvs install 1.1.3-ohos
+  $ cjvs install 1.2.0-android
+  $ cjvs install 1.1.3-ios      # 仅 macOS 上可用
+  ```
+  可用后缀以 `cjvs rls` 的输出为准（`-android` / `-ohos`，macOS 上另有 `-ios`）。
 - 安装本地压缩版本（zip/tar.gz的目录结构需要和官方提供的一致）
   ```shell
   $ cjvs install 0.59.6 ~/Downloads/cangjie-0.59.6-linux_x64.tar.gz
-  installing 0.59.6...
-  installed.
+  install success.
   ```
 - 设置启动shell时默认的版本
   ```shell
   $ cjvs default 0.53.13
+  0.53.13 is set as default version.
   ```
 - 显示本地已经安装的仓颉版本
     ```shell
@@ -197,6 +260,14 @@ GLOBAL OPTIONS:
     Now using version: std_0.33.3
     ```
     ![mult shell](assets/multishell.png)
+
+    > `switch` 只改当前 shell，且要求该 shell 已加载 cjvs 环境（`eval "$(cjvs env bash)"`）；
+    > 未加载时会打印 shell 配置指引。目标版本不存在时提示 `<version> is not found.`
+- 删除版本:
+    ```shell
+    $ cjvs rm 0.53.13
+    ```
+    正在被当前 shell 使用的版本会拒绝删除（`version: 0.53.13 is inused.`），先 `cjvs switch` 到别的版本再删。
 - 手动添加版本: 
   - 把仓颉编译器版本复制到`$HOME/.config/cjvs/store`目录
     - 如 `$HOME/.config/cjvs/store/std_0.33.3`， 该目录直接包含`bin、lib、runtime、tools、modules`等目录 
@@ -272,24 +343,43 @@ $ cjvs stdx install 1.1.3.1
 # 安装 stdx（从本地 zip 文件）
 $ cjvs stdx install 1.1.3.1 ~/Downloads/stdx-1.1.3.1.zip
 
-# 列出已安装的 stdx 版本
+# 列出已安装的 stdx 版本（* 表示当前使用的版本）
 $ cjvs stdx ls
+Installed stdx versions (* = current):
+	  1.0.4
+	  1.1.0
+	* 1.1.3.1
+	  1.2.0.1
 
-# 设置默认版本为 1.0.0，使用动态库
-$ cjvs stdx default 1.0.0
+# 设置默认版本为 1.1.3.1，使用动态库
+$ cjvs stdx default 1.1.3.1
 
-# 设置默认版本为 1.0.0，使用静态库
-$ cjvs stdx default 1.0.0 static
+# 设置默认版本为 1.1.3.1，使用静态库
+$ cjvs stdx default 1.1.3.1 static
 
-# 切换当前版本为 1.0.0，使用动态库
-$ cjvs stdx use 1.0.0
+# 切换当前版本为 1.1.3.1，使用动态库
+$ cjvs stdx use 1.1.3.1
 
 # 只修改默认库类型为 static（不改变版本）
 $ cjvs stdx config static
 
 # 删除指定版本
-$ cjvs stdx remove 0.9.0
+$ cjvs stdx remove 1.0.4
 ```
+
+#### stdx 落盘位置与 CANGJIE_STDX_PATH
+
+stdx 安装到配置目录下的 `stdx/<version>/`，再按平台、运行时与库类型分层：
+
+```text
+~/.config/cjvs/stdx/1.1.3.1/linux_x86_64_cjnative/static/stdx     # 静态库
+~/.config/cjvs/stdx/1.1.3.1/linux_x86_64_cjnative/dynamic/stdx    # 动态库
+```
+
+- 目录名里的 `<os>_<arch>_<runtime>`：旧版 SDK 是 `linux_x86_64_llvm`，新版是 `linux_x86_64_cjnative`；
+  cjvs 先找 `cjnative` 再回退到 `llvm`，两种结构都能识别。
+- `cjvs stdx-env <shell>` / `cjvs stdx env <shell>` 输出的 `CANGJIE_STDX_PATH` 指向
+  `.../<static|dynamic>/stdx`（即放着 `libstdx.*`、`*.cjo` 的那一层），正好是 cjpm 期望的位置。
 
 #### 在环境中启用 stdx
 
