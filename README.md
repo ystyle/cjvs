@@ -24,6 +24,25 @@
 - **管理 stdx 扩展库**：在线安装（atomgit 自动下载）或本地 zip 安装，切换、删除 stdx 版本，支持静态/动态库切换
 - **多 Shell 支持**：bash、zsh、fish、nushell、elvish、powershell
 
+### 下载
+
+最新版本的三平台制品（`latest` 链接，始终指向最新 Release）：
+
+| 平台 | 下载链接 |
+|---|---|
+| Linux x86_64 | <https://github.com/ystyle/cjvs/releases/latest/download/cjvs_linux_amd64.zip> |
+| Windows x86_64 | <https://github.com/ystyle/cjvs/releases/latest/download/cjvs_windows_amd64.zip> |
+| macOS arm64（Apple Silicon） | <https://github.com/ystyle/cjvs/releases/latest/download/cjvs_macos_aarch64.zip> |
+
+```shell
+# 直接下载（以 Linux x86_64 为例）
+curl -LO https://github.com/ystyle/cjvs/releases/latest/download/cjvs_linux_amd64.zip
+```
+
+全部版本列表：<https://github.com/ystyle/cjvs/releases>
+
+> 归档名带版本号的制品（`cjvs_vX.Y.Z_<平台>.zip`）也会同时发布；上面的固定名文件始终对应最新版本，适合写进脚本。
+
 ### 安装
 1. Archlinux
   - 如果使用 `Archlinux` 可以使用 `paru -S cjvs-bin` 安装
