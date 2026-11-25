@@ -280,7 +280,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-1.0.6.zip&objectKey=6afec29b05b3c57676e02810",
-    "channel": "sts",
+    "channel": "lts",
     "ext": "zip",
     "version": "1.0.6",
     "os": "windows",
@@ -290,7 +290,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-1.0.6.tar.gz&objectKey=6afec28305b3c57676e0280d",
-    "channel": "sts",
+    "channel": "lts",
     "ext": "tar.gz",
     "version": "1.0.6",
     "os": "darwin",
@@ -300,7 +300,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-aarch64-1.0.6.tar.gz&objectKey=6afec29a05b3c57676e0280f",
-    "channel": "sts",
+    "channel": "lts",
     "ext": "tar.gz",
     "version": "1.0.6",
     "os": "linux",
@@ -310,7 +310,7 @@
   },
   {
     "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-1.0.6.tar.gz&objectKey=6afec29905b3c57676e0280e",
-    "channel": "sts",
+    "channel": "lts",
     "ext": "tar.gz",
     "version": "1.0.6",
     "os": "linux",
