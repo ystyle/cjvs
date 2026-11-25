@@ -1,0 +1,112 @@
+[
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-1.1.5.zip&objectKey=6af2e042e4bd101f57762f65",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.1.5",
+    "os": "windows",
+    "arch": "x86_64",
+    "target": "native",
+    "sha256sum": "28b72a653ebe206ee03d3fe1d521cdd8dc319d2e5912d6f5bc76f61c1b4f8739"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-android-1.1.5.zip&objectKey=6af2e14de4bd101f57762f66",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.1.5-android",
+    "os": "windows",
+    "arch": "x86_64",
+    "target": "android",
+    "sha256sum": "00a28717b796fd01f344f52865fc7ffb2888ef075d8ab7334202521c91fab469"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-windows-x64-ohos-1.1.5.zip&objectKey=6af2e235e4bd101f57762f67",
+    "channel": "sts",
+    "ext": "zip",
+    "version": "1.1.5-ohos",
+    "os": "windows",
+    "arch": "x86_64",
+    "target": "ohos",
+    "sha256sum": "7571974e507afe4390e796546fdc1a62f09ad9aa5f8d5a6a43b1d6803d03422e"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-1.1.5.tar.gz&objectKey=6af2e393e4bd101f57762f68",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "native",
+    "sha256sum": "30766ef76d91fe7db3d4bd3bcf763d2931f536e90bc7a8070c598120ea5aa2d9"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-ios-1.1.5.tar.gz&objectKey=6af2e443e4bd101f57762f6b",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5-ios",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "ios",
+    "sha256sum": "ce25485cafb0b4afb5f73ce6bac17fccb2767afd26dc26bf35a33d6a48eb3a5c"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-android-1.1.5.tar.gz&objectKey=6af2e3fce4bd101f57762f6a",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5-android",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "android",
+    "sha256sum": "078fc90546e3f3d7bc1b94219356d2e17955a31f380b7885a805543a3c66bd58"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-mac-aarch64-ohos-1.1.5.tar.gz&objectKey=6af2e3a2e4bd101f57762f69",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5-ohos",
+    "os": "darwin",
+    "arch": "aarch64",
+    "target": "ohos",
+    "sha256sum": "2c1360eb67e507f8f2c073a7157a85c317e657f7b687ceb67260c035efcad98f"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-1.1.5.tar.gz&objectKey=6af2e977e4bd101f57762f70",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5",
+    "os": "linux",
+    "arch": "x86_64",
+    "target": "native",
+    "sha256sum": "98c952845c982ba973ded07d0bf26c4879412457951d4d2815d233dc9630c9fa"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-aarch64-1.1.5.tar.gz&objectKey=6af2e781e4bd101f57762f6d",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5",
+    "os": "linux",
+    "arch": "aarch64",
+    "target": "native",
+    "sha256sum": "2ee7b0fb38c6b5c38996ae8710d061617bf54d429e0f9817cd57aea71a3e0eb8"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-ohos-1.1.5.tar.gz&objectKey=6af2e80ce4bd101f57762f6e",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5-ohos",
+    "os": "linux",
+    "arch": "x86_64",
+    "target": "ohos",
+    "sha256sum": "f9c8c52af9c5ddc60be8bebaed9264e4b5bfac87aaa2c39dd47a98fc85a0bd43"
+  },
+  {
+    "url": "https://cangjie-lang.cn/v1/files/auth/downLoad?nsId=142267&fileName=cangjie-sdk-linux-x64-android-1.1.5.tar.gz&objectKey=6af2e8dee4bd101f57762f6f",
+    "channel": "sts",
+    "ext": "tar.gz",
+    "version": "1.1.5-android",
+    "os": "linux",
+    "arch": "x86_64",
+    "target": "android",
+    "sha256sum": "a2adf052352e5ffcb861722eefd2e4fcdb3e5c24e755d19256ba0479422cdbbf"
+  }
+]
